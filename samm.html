@@ -142,7 +142,7 @@ nav button.on{color:#5eead4}
 <audio id="bgMusic" src="https://files.catbox.moe/cxjo25.mp3" loop preload="auto"></audio>
 
 <div class="toast" id="toast">
-<div class="toast-icon" id="toastIcon">✓</div>
+<div class="toast-icon" id="toastIcon">OK</div>
 <div class="toast-text" id="toastText"></div>
 </div>
 
@@ -323,18 +323,18 @@ nav button.on{color:#5eead4}
 <h2>Đổi mật khẩu</h2>
 <input id="oldPass" type="password" placeholder="Mật khẩu hiện tại">
 <input id="newPass" type="password" placeholder="Mật khẩu mới">
-<input id   ="newPass2" type="password" placeholder="Nhập lại">
+<input id="newPass2" type="password" placeholder="Nhập lại">
 <div class="btns">
-<button class="bt" onclick="submitChangePass()">Xác nh if(!ận</button>
+<button class="bt" onclick="submitChangePass()">Xác nhận</button>
 <button class="bd" onclick="closeChangePass()">Đóng</button>
-</musicdiv>
+</div>
 </div>
 </div>
 
 <div class="modal" id="adminPassModal">
 <div class="mbox">
-<div class="lock-icon">🔐Playing</div>
-<h2 style="text-align:center">Nhập mật khẩu Admin</h2){>
+<div class="lock-icon">🔐</div>
+<h2 style="text-align:center">Nhập mật khẩu Admin</h2>
 <input id="adminPassInput" type="password" placeholder="Mật khẩu admin">
 <div class="btns">
 <button class="bt" onclick="verifyAdminPass()">Xác nhận</button>
@@ -356,7 +356,7 @@ nav button.on{color:#5eead4}
 <div class="order-detail-row"><span class="lbl">Thời gian</span><span class="val" id="odTime">-</span></div>
 <div class="order-detail-row"><span class="lbl">Mã đơn</span><span class="val" id="odCode">-</span></div>
 </div>
-<button class="btn-full btn-open-link" id="odLinkBtn" onclick="openOrderLink()" style="display:none">Mở link giao hàng</button>
+<button class="btn-full btn-open-link" id="odLinkBtn" onclick="openOrder">Link()" style="display:noneMở link giao hàng</button>
 <button class="btn-full btn-view-order" onclick="viewOrderInHistory()">Xem trong Đơn hàng</button>
 <button class="btn-full btn-close-modal" onclick="closeOrderModal()">Đóng</button>
 </div>
@@ -365,488 +365,489 @@ nav button.on{color:#5eead4}
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
-var firebaseConfig = {
-    databaseURL: "https://samm-shop-default-rtdb.firebaseio.com"
-};
-firebase.initializeApp(firebaseConfig);
-var db = firebase.database();
+window.addEventListener('load', function(){
+    var firebaseConfig = {
+        databaseURL: "https://samm-shop-default-rtdb.firebaseio.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.database();
 
-var ADMIN_EMAIL = "kaimomo2011@gmail.com";
-var ADMIN_PASSWORD = "samm2026";
+    var ADMIN_EMAIL = "kaimomo2011@gmail.com";
+    var ADMIN_PASSWORD = "samm2026";
 
-var users = {};
-var products = [];
-var notices = [];
-var cur = "";
-var deposit = null;
-var timerId = null;
-var authMode = "login";
-var adminUnlocked = false;
-var currentOrderUrl = "";
-var musicPlaying = false;
+    var users = {};
+    var products = [];
+    var notices = [];
+    var cur = "";
+    var deposit = null;
+    var timerId = null;
+    var authMode = "login";
+    var adminUnlocked = false;
+    var currentOrderUrl = "";
+    var musicPlaying = false;
 
-function $(id){ return document.getElementById(id); }
-function money(v){ return Number(v||0).toLocaleString("vi-VN")+" d"; }
-function esc(v){
-    var s = String(v == null ? "" : v);
-    return s.replace(/[&<>"']/g, function(c){
-        if(c === "&") return "&amp;";
-        if(c === "<") return "&lt;";
-        if(c === ">") return "&gt;";
-        if(c === '"') return "&quot;";
-        if(c === "'") return "&#39;";
-        return c;
+    function $(id){ return document.getElementById(id); }
+    function money(v){ return Number(v||0).toLocaleString("vi-VN")+" d"; }
+    function esc(v){
+        var s = String(v == null ? "" : v);
+        return s.replace(/[&<>"']/g, function(c){
+            if(c === "&") return "&amp;";
+            if(c === "<") return "&lt;";
+            if(c === ">") return "&gt;";
+            if(c === '"') return "&quot;";
+            if(c === "'") return "&#39;";
+            return c;
+        });
+    }
+
+    function loadAllData(callback){
+        db.ref('shopData').once('value').then(function(snapshot){
+            var data = snapshot.val() || {};
+            users = data.users || {};
+            products = data.products || [];
+            notices = data.notices || [];
+            if(callback) callback();
+        }).catch(function(error){
+            console.error("Loi tai du lieu:", error);
+        });
+    }
+
+    function saveUsersToFirebase(){ db.ref('shopData/users').set(users); }
+    function saveProductsToFirebase(){ db.ref('shopData/products').set(products); }
+    function saveNoticesToFirebase(){ db.ref('shopData/notices').set(notices); }
+
+    var bgMusic = $("bgMusic");
+    function playMusic(){
+        bgMusic.volume = 0.4;
+        bgMusic.play().then(function(){ musicPlaying = true; }).catch(function(){ musicPlaying = false; });
+    }
+    bgMusic.addEventListener("ended", function(){ bgMusic.currentTime = 0; bgMusic.play(); });
+    playMusic();
+    document.addEventListener("click", function(){
+        if(!musicPlaying){ bgMusic.play().then(function(){ musicPlaying = true; }).catch(function(){}); }
     });
-}
 
-function loadAllData(callback){
-    db.ref('shopData').once('value').then(function(snapshot){
+    function showToast(icon, text, type){
+        var t = $("toast");
+        $("toastIcon").textContent = icon;
+        $("toastText").innerHTML = text;
+        t.className = "toast";
+        if(type === "success") t.classList.add("success");
+        else if(type === "error") t.classList.add("error");
+        setTimeout(function(){ t.classList.add("show"); }, 50);
+        setTimeout(function(){ t.classList.remove("show"); }, 4000);
+    }
+
+    function user(){ return (cur && users[cur]) ? users[cur] : null; }
+    function isAdmin(){ return cur === ADMIN_EMAIL; }
+
+    window.go = function(name){
+        if(name === "admin" && (!isAdmin() || !adminUnlocked)) name = "shop";
+        var pages = document.querySelectorAll(".page");
+        for(var i=0;i<pages.length;i++) pages[i].classList.remove("on");
+        var btns = document.querySelectorAll("nav button");
+        for(var j=0;j<btns.length;j++) btns[j].classList.remove("on");
+        var page = $("p-" + name);
+        if(page) page.classList.add("on");
+        var btn = document.querySelector("nav button[data-p='" + name + "']");
+        if(btn) btn.classList.add("on");
+        window.scrollTo(0, 0);
+        if(name === "admin") renderAdmin();
+    };
+
+    window.openAdminPanel = function(){
+        if(!isAdmin()){ alert("Ban khong co quyen!"); return; }
+        if(!adminUnlocked){ openAdminPass(); return; }
+        go("admin");
+    };
+    function openAdminPass(){ $("adminPassModal").classList.add("on"); $("adminPassInput").value = ""; }
+    window.closeAdminPass = function(){ $("adminPassModal").classList.remove("on"); };
+    window.verifyAdminPass = function(){
+        if($("adminPassInput").value === ADMIN_PASSWORD){
+            adminUnlocked = true;
+            closeAdminPass();
+            showToast("OK", "Xac thuc thanh cong!", "success");
+            setTimeout(function(){ go("admin"); }, 800);
+        } else {
+            alert("Mat khau admin sai!");
+            $("adminPassInput").value = "";
+        }
+    };
+
+    window.chipClick = function(){ if(user()) go("acc"); else openAuth(); };
+    window.openAuth = function(){ $("authModal").classList.add("on"); $("aEmail").value = ""; $("aPass").value = ""; };
+    window.closeAuth = function(){ $("authModal").classList.remove("on"); };
+    window.switchAuth = function(){
+        if(authMode === "login"){
+            authMode = "register"; $("aTitle").textContent = "Dang ky"; $("aSubmit").textContent = "Dang ky";
+        } else {
+            authMode = "login"; $("aTitle").textContent = "Dang nhap"; $("aSubmit").textContent = "Dang nhap";
+        }
+    };
+    window.submitAuth = function(){
+        var email = $("aEmail").value.trim().toLowerCase();
+        var pass = $("aPass").value;
+        if(!email || email.indexOf("@") < 1){ showToast("X", "Email khong hop le!", "error"); return; }
+        if(pass.length < 6){ showToast("X", "Mat khau can it nhat 6 ky tu!", "error"); return; }
+        loadAllData(function(){
+            if(authMode === "register"){
+                if(users[email]){ showToast("X", "Email da ton tai!", "error"); return; }
+                users[email] = { email: email, password: pass, balance: 0, orders: [], deposits: [], createdAt: Date.now() };
+                saveUsersToFirebase();
+                cur = email;
+                localStorage.setItem("sammCurrent", email);
+                closeAuth(); renderAll(); go("shop");
+                showToast("OK", "Dang ky thanh cong!", "success");
+            } else {
+                if(!users[email]){ showToast("X", "Tai khoan chua ton tai!", "error"); return; }
+                if(users[email].password !== pass){ showToast("X", "Sai mat khau!", "error"); return; }
+                cur = email;
+                localStorage.setItem("sammCurrent", email);
+                closeAuth(); renderAll(); go("shop");
+                showToast("OK", "Dang nhap thanh cong!", "success");
+            }
+        });
+    };
+    window.doLogout = function(){
+        if(!confirm("Dang xuat?")) return;
+        cur = ""; adminUnlocked = false;
+        localStorage.removeItem("sammCurrent");
+        renderAll(); go("shop");
+    };
+
+    window.openChangePass = function(){ $("passModal").classList.add("on"); $("oldPass").value = ""; $("newPass").value = ""; $("newPass2").value = ""; };
+    window.closeChangePass = function(){ $("passModal").classList.remove("on"); };
+    window.submitChangePass = function(){
+        var u = user(); if(!u) return;
+        var o = $("oldPass").value, n = $("newPass").value, n2 = $("newPass2").value;
+        if(o !== u.password){ alert("Mat khau hien tai sai"); return; }
+        if(n.length < 6){ alert("Mat khau moi >= 6"); return; }
+        if(n !== n2){ alert("Nhap lai khong khop"); return; }
+        loadAllData(function(){
+            users[cur].password = n;
+            saveUsersToFirebase();
+            closeChangePass();
+            showToast("OK", "Doi mat khau thanh cong!", "success");
+        });
+    };
+
+    var amtInput = $("amt");
+    if(amtInput){
+        amtInput.oninput = function(e){ var v = e.target.value.replace(/\D/g, ""); e.target.value = v ? Number(v).toLocaleString("vi-VN") : ""; };
+    }
+    var qbs = document.querySelectorAll(".quick button");
+    for(var qi=0; qi<qbs.length; qi++){
+        qbs[qi].onclick = function(){
+            for(var j=0;j<qbs.length;j++) qbs[j].classList.remove("on");
+            this.classList.add("on");
+            amtInput.value = Number(this.dataset.a).toLocaleString("vi-VN");
+        };
+    }
+    window.createDeposit = function(){
+        if(!user()){ openAuth(); return; }
+        if(deposit){ alert("Dang co phien nap!"); return; }
+        var amt = Number(amtInput.value.replace(/\D/g, ""));
+        if(amt < 10000){ alert("Toi thieu 10.000 d"); return; }
+        if(amt > 50000000){ alert("Toi da 50.000.000 d"); return; }
+        loadAllData(function(){
+            deposit = { amount: amt, expiresAt: Date.now() + 600000 };
+            users[cur].deposits = users[cur].deposits || [];
+            users[cur].deposits.unshift({ amount: amt, status: "Cho xac nhan", time: Date.now() });
+            saveUsersToFirebase();
+            $("qrAmt").textContent = money(amt);
+            $("form").style.display = "none"; $("warn").style.display = "none"; $("qr").style.display = "block";
+            startTimer();
+            showToast("OK", "Yeu cau nap da gui! Cho 1-3 phut.", "info");
+        });
+    };
+    function startTimer(){
+        clearInterval(timerId); $("timer").style.color = "#fff"; tick();
+        timerId = setInterval(tick, 1000);
+    }
+    function tick(){
+        if(!deposit) return;
+        var r = Math.max(0, deposit.expiresAt - Date.now());
+        var m = Math.floor(r / 60000), s = Math.floor((r % 60000) / 1000);
+        $("timer").textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+        if(r <= 0){ clearInterval(timerId); $("timer").style.color = "#ef4444"; cancelDeposit(false); }
+    }
+    window.cancelDeposit = function(ask){
+        if(ask && !confirm("Huy yeu cau nap?")) return;
+        clearInterval(timerId); timerId = null; deposit = null;
+        $("qr").style.display = "none"; $("form").style.display = "block"; $("warn").style.display = "block";
+        $("timer").style.color = "#fff"; $("timer").textContent = "10:00";
+    };
+
+    window.buy = function(id){
+        if(!user()){ openAuth(); showToast("!", "Vui long dang nhap!", "info"); return; }
+        loadAllData(function(){
+            var p = null;
+            for(var i=0;i<products.length;i++){ if(products[i].id === id){ p = products[i]; break; } }
+            if(!p){ alert("San pham khong ton tai!"); return; }
+            var price = Number(p.price || 0);
+            if(Number(users[cur].balance || 0) < price){
+                showToast("!", "So du khong du! Can " + money(price), "info");
+                setTimeout(function(){ go("nap"); }, 800);
+                return;
+            }
+            if(!confirm("Mua \"" + p.name + "\" voi gia " + money(price) + "?")) return;
+            var t = Date.now();
+            var code = "DH" + String(t).slice(-8);
+            users[cur].balance = Number(users[cur].balance || 0) - price;
+            users[cur].orders = users[cur].orders || [];
+            users[cur].orders.unshift({ name: p.name, price: price, time: t, code: code, url: p.url || "" });
+            saveUsersToFirebase();
+            renderAll();
+            currentOrderUrl = p.url || "";
+            $("odName").textContent = p.name; $("odPrice").textContent = money(price);
+            $("odTime").textContent = new Date(t).toLocaleString("vi-VN"); $("odCode").textContent = code;
+            if(p.url) $("odLinkBtn").style.display = "block"; else $("odLinkBtn").style.display = "none";
+            $("orderModal").classList.add("on");
+        });
+    };
+    window.closeOrderModal = function(){ $("orderModal").classList.remove("on"); };
+    window.openOrderLink = function(){ if(currentOrderUrl) window.open(currentOrderUrl, "_blank"); };
+    window.viewOrderInHistory = function(){ closeOrderModal(); go("don"); showToast("OK", "Da chuyen den Don hang!", "success"); };
+
+    function checkAdmin(){ if(!isAdmin()){ alert("Ban khong phai admin!"); return false; } if(!adminUnlocked){ alert("Chua xac thuc!"); return false; } return true; }
+
+    window.addProduct = function(){
+        if(!checkAdmin()) return;
+        var name = $("pName").value.trim(), desc = $("pDesc").value.trim();
+        var price = Number($("pPrice").value), image = $("pImage").value.trim(), url = $("pUrl").value.trim();
+        if(!name){ alert("Nhap ten san pham"); return; }
+        if(!price || price <= 0){ alert("Nhap gia hop le"); return; }
+        loadAllData(function(){
+            products.unshift({ id: Date.now(), name: name, desc: desc, price: price, image: image, url: url, createdAt: Date.now() });
+            saveProductsToFirebase();
+            $("pName").value = ""; $("pDesc").value = ""; $("pPrice").value = ""; $("pImage").value = ""; $("pUrl").value = "";
+            showToast("OK", "Da day san pham!", "success");
+            renderAll();
+        });
+    };
+    window.delProduct = function(id){
+        if(!checkAdmin()) return;
+        if(!confirm("Xoa san pham?")) return;
+        loadAllData(function(){
+            var arr = [];
+            for(var i=0;i<products.length;i++){ if(products[i].id !== id) arr.push(products[i]); }
+            products = arr;
+            saveProductsToFirebase();
+            renderAll();
+        });
+    };
+    window.setNotice = function(){
+        if(!checkAdmin()) return;
+        var text = $("nText").value.trim();
+        if(!text){ alert("Nhap noi dung"); return; }
+        loadAllData(function(){
+            notices = [{ text: text, time: Date.now() }];
+            saveNoticesToFirebase();
+            $("nText").value = "";
+            showToast("OK", "Da gui thong bao!", "success");
+            renderNotice();
+        });
+    };
+    window.clearNotice = function(){
+        if(!checkAdmin()) return;
+        notices = []; saveNoticesToFirebase(); renderNotice();
+    };
+    window.approveDeposit = function(email, index){
+        if(!checkAdmin()) return;
+        loadAllData(function(){
+            if(!users[email] || !users[email].deposits || !users[email].deposits[index]) return;
+            var d = users[email].deposits[index];
+            if(d.status === "Da duyet") return;
+            users[email].balance = Number(users[email].balance || 0) + Number(d.amount);
+            users[email].deposits[index].status = "Da duyet";
+            users[email].deposits[index].approvedAt = Date.now();
+            saveUsersToFirebase();
+            showToast("OK", "Da duyet " + money(d.amount), "success");
+            renderAll();
+        });
+    };
+    window.rejectDeposit = function(email, index){
+        if(!checkAdmin()) return;
+        loadAllData(function(){
+            if(!users[email] || !users[email].deposits || !users[email].deposits[index]) return;
+            users[email].deposits[index].status = "Da huy";
+            saveUsersToFirebase();
+            renderAll();
+        });
+    };
+    window.clearAllProducts = function(){
+        if(!checkAdmin()) return;
+        if(!confirm("Xoa TAT CA san pham?")) return;
+        products = []; saveProductsToFirebase(); renderAll();
+    };
+    window.clearAllUsers = function(){
+        if(!checkAdmin()) return;
+        if(!confirm("Xoa TAT CA users?")) return;
+        users = {}; cur = ""; adminUnlocked = false;
+        saveUsersToFirebase();
+        localStorage.removeItem("sammCurrent");
+        renderAll(); go("shop");
+    };
+
+    function renderProducts(){
+        var box = $("products");
+        if(!box) return;
+        if(!products.length){ box.innerHTML = '<div class="empty" style="grid-column:1/-1">Chua co san pham</div>'; return; }
+        var html = "";
+        for(var i=0;i<products.length;i++){
+            var p = products[i];
+            var img = p.image ? esc(p.image) : "https://placehold.co/400x300/0f141b/5eead4?text=SAMM";
+            html += '<div class="product"><div class="img-wrap">';
+            html += '<img src="' + img + '" onerror="this.src=\'https://placehold.co/400x300?text=SAMM\'">';
+            html += '<div class="badge">HOT</div></div><div class="product-body">';
+            html += '<div class="product-title">' + esc(p.name) + '</div>';
+            html += '<div class="product-desc">' + esc(p.desc || "") + '</div>';
+            html += '<div class="product-price">' + money(p.price) + '</div>';
+            html += '<button class="buy" onclick="buy(' + p.id + ')">Mua ngay</button></div></div>';
+        }
+        box.innerHTML = html;
+    }
+    function renderNotice(){
+        var n = $("notice");
+        if(!n) return;
+        if(notices.length){ n.innerHTML = "TB: " + esc(notices[0].text); n.style.display = "block"; }
+        else { n.style.display = "none"; }
+    }
+    function renderOrders(){
+        var u = user();
+        var ob = $("orders");
+        if(!ob) return;
+        if(!u || !u.orders || !u.orders.length){ ob.innerHTML = '<div class="empty">Chua co don hang</div>'; return; }
+        var html = "";
+        for(var i=0;i<u.orders.length;i++){
+            var o = u.orders[i];
+            html += '<div class="order-card"><div><div class="o-name">' + esc(o.name) + '</div>';
+            html += '<div class="o-time">' + new Date(o.time).toLocaleString("vi-VN");
+            if(o.code) html += " • " + esc(o.code);
+            html += '</div></div><div class="o-price">' + money(o.price) + '</div></div>';
+        }
+        ob.innerHTML = html;
+    }
+    function renderProfile(){
+        var u = user();
+        if(!u){
+            $("cName").textContent = "Dang nhap"; $("cBal").textContent = "0 VND"; $("cAv").textContent = "?";
+            $("guestView").style.display = "block"; $("profileView").style.display = "none";
+            return;
+        }
+        $("cName").textContent = u.email.split("@")[0];
+        $("cBal").textContent = Number(u.balance || 0).toLocaleString("vi-VN") + " VND";
+        $("cAv").textContent = u.email[0].toUpperCase();
+        $("guestView").style.display = "none"; $("profileView").style.display = "block";
+        $("pAv").textContent = u.email[0].toUpperCase(); $("pEmail").textContent = u.email;
+        $("pBal").textContent = money(u.balance); $("pOrderCount").textContent = (u.orders || []).length;
+        if(u.createdAt){ $("pJoined").textContent = "Thanh vien tu " + new Date(u.createdAt).toLocaleDateString("vi-VN"); }
+        else { $("pJoined").textContent = ""; }
+    }
+    function renderAdminCorner(){
+        var c = $("adminCorner");
+        if(!c) return;
+        if(isAdmin()) c.classList.add("on"); else c.classList.remove("on");
+    }
+    function renderAdmin(){
+        if(!isAdmin() || !adminUnlocked) return;
+        var pl = $("productList");
+        if(pl){
+            if(!products.length){ pl.innerHTML = '<div class="empty">Chua co san pham</div>'; }
+            else {
+                var html = "";
+                for(var i=0;i<products.length;i++){
+                    var p = products[i];
+                    var img = p.image ? esc(p.image) : "https://placehold.co/100x100/1f2937/5eead4?text=S";
+                    html += '<div class="admin-item"><img src="' + img + '" onerror="this.src=\'https://placehold.co/100x100?text=S\'">';
+                    html += '<div class="info"><div class="n">' + esc(p.name) + '</div>';
+                    html += '<div class="p">' + money(p.price) + '</div></div>';
+                    html += '<button class="del" onclick="delProduct(' + p.id + ')">x</button></div>';
+                }
+                pl.innerHTML = html;
+            }
+        }
+        var dl = $("depositList");
+        if(dl){
+            var pending = [];
+            for(var email in users){
+                if(!users.hasOwnProperty(email)) continue;
+                var deps = users[email].deposits || [];
+                for(var k=0;k<deps.length;k++){
+                    if(deps[k].status === "Cho xac nhan"){ pending.push({ email: email, index: k, amount: deps[k].amount }); }
+                }
+            }
+            if(!pending.length){ dl.innerHTML = '<div class="empty">Khong co yeu cau nap</div>'; }
+            else {
+                var h = "";
+                for(var j=0;j<pending.length;j++){
+                    var d = pending[j];
+                    h += '<div class="dep-approve"><div><div class="amt">' + money(d.amount) + '</div>';
+                    h += '<div class="email">' + esc(d.email) + '</div></div><div>';
+                    h += '<button class="btn-ok" onclick="approveDeposit(\'' + d.email + '\',' + d.index + ')">Duyet</button>';
+                    h += '<button class="btn-no" onclick="rejectDeposit(\'' + d.email + '\',' + d.index + ')">Huy</button>';
+                    h += '</div></div>';
+                }
+                dl.innerHTML = h;
+            }
+        }
+    }
+    function renderAll(){
+        renderProducts();
+        renderNotice();
+        renderOrders();
+        renderProfile();
+        renderAdminCorner();
+        checkApprovedNotification();
+    }
+    function checkApprovedNotification(){
+        var u = user();
+        if(!u || !u.deposits) return;
+        for(var i=0;i<u.deposits.length;i++){
+            var d = u.deposits[i];
+            if(d.status === "Da duyet" && d.approvedAt && !d.notified){
+                users[cur].deposits[i].notified = true;
+                saveUsersToFirebase();
+                showToast("OK", "Ban da thanh toan thanh cong! So du " + money(d.amount) + " da duoc cong.", "success");
+                return;
+            }
+        }
+    }
+    window.toggleDepHistory = function(){
+        var el = $("depHistory"), arw = $("depArrow");
+        if(el.style.display === "none"){
+            var u = user(); var list = (u && u.deposits) ? u.deposits : [];
+            if(!list.length){ el.innerHTML = '<div class="empty" style="padding:16px">Chua co lich su</div>'; }
+            else {
+                var html = "";
+                for(var i=0;i<list.length;i++){
+                    var d = list[i];
+                    var cls = "wait";
+                    if(d.status === "Da duyet") cls = "done";
+                    else if(d.status === "Da huy") cls = "cancel";
+                    html += '<div class="dep-item"><div><b style="color:#fff">' + money(d.amount) + '</b><br><span style="color:#6b7280;font-size:10px">' + new Date(d.time).toLocaleString("vi-VN") + '</span></div><span class="st ' + cls + '">' + esc(d.status) + '</span></div>';
+                }
+                el.innerHTML = html;
+            }
+            el.style.display = "block"; arw.textContent = "▲";
+        } else { el.style.display = "none"; arw.textContent = "▼"; }
+    };
+
+    cur = localStorage.getItem("sammCurrent") || "";
+
+    db.ref('shopData').on('value', function(snapshot){
         var data = snapshot.val() || {};
         users = data.users || {};
         products = data.products || [];
         notices = data.notices || [];
-        if(callback) callback();
-    }).catch(function(error){
-        console.error("Loi tai du lieu:", error);
-        showToast("X", "Khong the ket noi may chu!", "error");
-    });
-}
-
-function saveUsersToFirebase(){ db.ref('shopData/users').set(users); }
-function saveProductsToFirebase(){ db.ref('shopData/products').set(products); }
-function saveNoticesToFirebase(){ db.ref('shopData/notices').set(notices); }
-
-var bgMusic = $("bgMusic");
-function playMusic(){
-    bgMusic.volume = 0.4;
-    bgMusic.play().then(function(){ musicPlaying = true; }).catch(function(){ musicPlaying = false; });
-}
-bgMusic.addEventListener("ended", function(){ bgMusic.currentTime = 0; bgMusic.play(); });
-window.addEventListener("load", function(){ playMusic(); });
-document.addEventListener("click", function(){
- bgMusic.play().then(function(){ musicPlaying = true; }).catch(function(){}); }
-});
-
-function showToast(icon, text, type){
-    var t = $("toast");
-    $("toastIcon").textContent = icon;
-    $("toastText").innerHTML = text;
-    t.className = "toast";
-    if(type === "success") t.classList.add("success");
-    else if(type === "error") t.classList.add("error");
-    setTimeout(function(){ t.classList.add("show"); }, 50);
-    setTimeout(function(){ t.classList.remove("show"); }, 4000);
-}
-
-function go(name){
-    if(name === "admin" && (!isAdmin() || !adminUnlocked)) name = "shop";
-    var pages = document.querySelectorAll(".page");
-    for(var i=0;i<pages.length;i++) pages[i].classList.remove("on");
-    var btns = document.querySelectorAll("nav button");
-    for(var j=0;j<btns.length;j++) btns[j].classList.remove("on");
-    var page = $("p-" + name);
-    if(page) page.classList.add("on");
-    var btn = document.querySelector("nav button[data-p='" + name + "']");
-    if(btn) btn.classList.add("on");
-    window.scrollTo(0, 0);
-    if(name === "admin") renderAdmin();
-}
-
-function openAdminPanel(){
-    if(!isAdmin()){ alert("Ban khong co quyen!"); return; }
-    if(!adminUnlocked){ openAdminPass(); return; }
-    go("admin");
-}
-function openAdminPass(){ $("adminPassModal").classList.add("on"); $("adminPassInput").value = ""; }
-function closeAdminPass(){ $("adminPassModal").classList.remove("on"); }
-function verifyAdminPass(){
-    if($("adminPassInput").value === ADMIN_PASSWORD){
-        adminUnlocked = true;
-        closeAdminPass();
-        showToast("OK", "Xac thuc thanh cong!", "success");
-        setTimeout(function(){ go("admin"); }, 800);
-    } else {
-        alert("Mat khau admin sai!");
-        $("adminPassInput").value = "";
-    }
-}
-
-function chipClick(){ if(user()) go("acc"); else openAuth(); }
-function openAuth(){ $("authModal").classList.add("on"); $("aEmail").value = ""; $("aPass").value = ""; }
-function closeAuth(){ $("authModal").classList.remove("on"); }
-function switchAuth(){
-    if(authMode === "login"){
-        authMode = "register"; $("aTitle").textContent = "Dang ky"; $("aSubmit").textContent = "Dang ky";
-    } else {
-        authMode = "login"; $("aTitle").textContent = "Dang nhap"; $("aSubmit").textContent = "Dang nhap";
-    }
-}
-function submitAuth(){
-    var email = $("aEmail").value.trim().toLowerCase();
-    var pass = $("aPass").value;
-    if(!email || email.indexOf("@") < 1){ showToast("X", "Email khong hop le!", "error"); return; }
-    if(pass.length < 6){ showToast("X", "Mat khau can it nhat 6 ky tu!", "error"); return; }
-    
-    loadAllData(function(){
-        if(authMode === "register"){
-            if(users[email]){ showToast("X", "Email da ton tai!", "error"); return; }
-            users[email] = { email: email, password: pass, balance: 0, orders: [], deposits: [], createdAt: Date.now() };
-            saveUsersToFirebase();
-            cur = email;
-            localStorage.setItem("sammCurrent", email);
-            closeAuth(); renderAll(); go("shop");
-            showToast("OK", "Dang ky thanh cong!", "success");
-        } else {
-            if(!users[email]){ showToast("X", "Tai khoan chua ton tai!", "error"); return; }
-            if(users[email].password !== pass){ showToast("X", "Sai mat khau!", "error"); return; }
-            cur = email;
-            localStorage.setItem("sammCurrent", email);
-            closeAuth(); renderAll(); go("shop");
-            showToast("OK", "Dang nhap thanh cong!", "success");
-        }
-    });
-}
-function doLogout(){
-    if(!confirm("Dang xuat?")) return;
-    cur = ""; adminUnlocked = false;
-    localStorage.removeItem("sammCurrent");
-    renderAll(); go("shop");
-}
-
-function openChangePass(){ $("passModal").classList.add("on"); $("oldPass").value = ""; $("newPass").value = ""; $("newPass2").value = ""; }
-function closeChangePass(){ $("passModal").classList.remove("on"); }
-function submitChangePass(){
-    var u = user(); if(!u) return;
-    var o = $("oldPass").value, n = $("newPass").value, n2 = $("newPass2").value;
-    if(o !== u.password){ alert("Mat khau hien tai sai"); return; }
-    if(n.length < 6){ alert("Mat khau moi >= 6"); return; }
-    if(n !== n2){ alert("Nhap lai khong khop"); return; }
-    loadAllData(function(){
-        users[cur].password = n;
-        saveUsersToFirebase();
-        closeChangePass();
-        showToast("OK", "Doi mat khau thanh cong!", "success");
-    });
-}
-
-var amtInput = $("amt");
-amtInput.oninput = function(e){ var v = e.target.value.replace(/\D/g, ""); e.target.value = v ? Number(v).toLocaleString("vi-VN") : ""; };
-var qbs = document.querySelectorAll(".quick button");
-for(var qi=0; qi<qbs.length; qi++){
-    qbs[qi].onclick = function(){
-        for(var j=0;j<qbs.length;j++) qbs[j].classList.remove("on");
-        this.classList.add("on");
-        amtInput.value = Number(this.dataset.a).toLocaleString("vi-VN");
-    };
-}
-function createDeposit(){
-    if(!user()){ openAuth(); return; }
-    if(deposit){ alert("Dang co phien nap!"); return; }
-    var amt = Number(amtInput.value.replace(/\D/g, ""));
-    if(amt < 10000){ alert("Toi thieu 10.000 d"); return; }
-    if(amt > 50000000){ alert("Toi da 50.000.000 d"); return; }
-    
-    loadAllData(function(){
-        deposit = { amount: amt, expiresAt: Date.now() + 600000 };
-        users[cur].deposits = users[cur].deposits || [];
-        users[cur].deposits.unshift({ amount: amt, status: "Cho xac nhan", time: Date.now() });
-        saveUsersToFirebase();
-        $("qrAmt").textContent = money(amt);
-        $("form").style.display = "none"; $("warn").style.display = "none"; $("qr").style.display = "block";
-        startTimer();
-        showToast("OK", "Yeu cau nap da gui! Cho 1-3 phut.", "info");
-    });
-}
-function startTimer(){
-    clearInterval(timerId); $("timer").style.color = "#fff"; tick();
-    timerId = setInterval(tick, 1000);
-}
-function tick(){
-    if(!deposit) return;
-    var r = Math.max(0, deposit.expiresAt - Date.now());
-    var m = Math.floor(r / 60000), s = Math.floor((r % 60000) / 1000);
-    $("timer").textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
-    if(r <= 0){ clearInterval(timerId); $("timer").style.color = "#ef4444"; cancelDeposit(false); }
-}
-function cancelDeposit(ask){
-    if(ask && !confirm("Huy yeu cau nap?")) return;
-    clearInterval(timerId); timerId = null; deposit = null;
-    $("qr").style.display = "none"; $("form").style.display = "block"; $("warn").style.display = "block";
-    $("timer").style.color = "#fff"; $("timer").textContent = "10:00";
-}
-
-function buy(id){
-    if(!user()){ openAuth(); showToast("!", "Vui long dang nhap!", "info"); return; }
-    
-    loadAllData(function(){
-        var p = null;
-        for(var i=0;i<products.length;i++){ if(products[i].id === id){ p = products[i]; break; } }
-        if(!p){ alert("San pham khong ton tai!"); return; }
-        var price = Number(p.price || 0);
-        if(Number(users[cur].balance || 0) < price){
-            showToast("!", "So du khong du! Can " + money(price), "info");
-            setTimeout(function(){ go("nap"); }, 800);
-            return;
-        }
-        if(!confirm("Mua \"" + p.name + "\" voi gia " + money(price) + "?")) return;
-        
-        var t = Date.now();
-        var code = "DH" + String(t).slice(-8);
-        users[cur].balance = Number(users[cur].balance || 0) - price;
-        users[cur].orders = users[cur].orders || [];
-        users[cur].orders.unshift({ name: p.name, price: price, time: t, code: code, url: p.url || "" });
-        saveUsersToFirebase();
         renderAll();
-        currentOrderUrl = p.url || "";
-        $("odName").textContent = p.name; $("odPrice").textContent = money(price);
-        $("odTime").textContent = new Date(t).toLocaleString("vi-VN"); $("odCode").textContent = code;
-        if(p.url) $("odLinkBtn").style.display = "block"; else $("odLinkBtn").style.display = "none";
-        $("orderModal").classList.add("on");
+        if($("p-admin") && $("p-admin").classList.contains("on") && adminUnlocked) renderAdmin();
     });
-}
-function closeOrderModal(){ $("orderModal").classList.remove("on"); }
-function openOrderLink(){ if(currentOrderUrl) window.open(currentOrderUrl, "_blank"); }
-function viewOrderInHistory(){ closeOrderModal(); go("don"); showToast("OK", "Da chuyen den Don hang!", "success"); }
 
-function checkAdmin(){ if(!isAdmin()){ alert("Ban khong phai admin!"); return false; } if(!adminUnlocked){ alert("Chua xac thuc!"); return false; } return true; }
-
-function addProduct(){
-    if(!checkAdmin()) return;
-    var name = $("pName").value.trim(), desc = $("pDesc").value.trim();
-    var price = Number($("pPrice").value), image = $("pImage").value.trim(), url = $("pUrl").value.trim();
-    if(!name){ alert("Nhap ten san pham"); return; }
-    if(!price || price <= 0){ alert("Nhap gia hop le"); return; }
-    
     loadAllData(function(){
-        products.unshift({ id: Date.now(), name: name, desc: desc, price: price, image: image, url: url, createdAt: Date.now() });
-        saveProductsToFirebase();
-        $("pName").value = ""; $("pDesc").value = ""; $("pPrice").value = ""; $("pImage").value = ""; $("pUrl").value = "";
-        showToast("OK", "Da day san pham!", "success");
+        go("shop");
         renderAll();
     });
-}
-function delProduct(id){
-    if(!checkAdmin()) return;
-    if(!confirm("Xoa san pham?")) return;
-    loadAllData(function(){
-        var arr = [];
-        for(var i=0;i<products.length;i++){ if(products[i].id !== id) arr.push(products[i]); }
-        products = arr;
-        saveProductsToFirebase();
-        renderAll();
-    });
-}
-function setNotice(){
-    if(!checkAdmin()) return;
-    var text = $("nText").value.trim();
-    if(!text){ alert("Nhap noi dung"); return; }
-    loadAllData(function(){
-        notices = [{ text: text, time: Date.now() }];
-        saveNoticesToFirebase();
-        $("nText").value = "";
-        showToast("OK", "Da gui thong bao!", "success");
-        renderNotice();
-    });
-}
-function clearNotice(){
-    if(!checkAdmin()) return;
-    notices = []; saveNoticesToFirebase(); renderNotice();
-}
-function approveDeposit(email, index){
-    if(!checkAdmin()) return;
-    loadAllData(function(){
-        if(!users[email] || !users[email].deposits || !users[email].deposits[index]) return;
-        var d = users[email].deposits[index];
-        if(d.status === "Da duyet") return;
-        users[email].balance = Number(users[email].balance || 0) + Number(d.amount);
-        users[email].deposits[index].status = "Da duyet";
-        users[email].deposits[index].approvedAt = Date.now();
-        saveUsersToFirebase();
-        showToast("OK", "Da duyet " + money(d.amount), "success");
-        renderAll();
-    });
-}
-function rejectDeposit(email, index){
-    if(!checkAdmin()) return;
-    loadAllData(function(){
-        if(!users[email] || !users[email].deposits || !users[email].deposits[index]) return;
-        users[email].deposits[index].status = "Da huy";
-        saveUsersToFirebase();
-        renderAll();
-    });
-}
-function clearAllProducts(){
-    if(!checkAdmin()) return;
-    if(!confirm("Xoa TAT CA san pham?")) return;
-    products = []; saveProductsToFirebase(); renderAll();
-}
-function clearAllUsers(){
-    if(!checkAdmin()) return;
-    if(!confirm("Xoa TAT CA users?")) return;
-    users = {}; cur = ""; adminUnlocked = false;
-    saveUsersToFirebase();
-    localStorage.removeItem("sammCurrent");
-    renderAll(); go("shop");
-}
-
-function renderProducts(){
-    var box = $("products");
-    if(!box) return;
-    if(!products.length){ box.innerHTML = '<div class="empty" style="grid-column:1/-1">Chua co san pham</div>'; return; }
-    var html = "";
-    for(var i=0;i<products.length;i++){
-        var p = products[i];
-        var img = p.image ? esc(p.image) : "https://placehold.co/400x300/0f141b/5eead4?text=SAMM";
-        html += '<div class="product"><div class="img-wrap">';
-        html += '<img src="' + img + '" onerror="this.src=\'https://placehold.co/400x300?text=SAMM\'">';
-        html += '<div class="badge">HOT</div></div><div class="product-body">';
-        html += '<div class="product-title">' + esc(p.name) + '</div>';
-        html += '<div class="product-desc">' + esc(p.desc || "") + '</div>';
-        html += '<div class="product-price">' + money(p.price) + '</div>';
-        html += '<button class="buy" onclick="buy(' + p.id + ')">Mua ngay</button></div></div>';
-    }
-    box.innerHTML = html;
-}
-function renderNotice(){
-    var n = $("notice");
-    if(!n) return;
-    if(notices.length){ n.innerHTML = "TB: " + esc(notices[0].text); n.style.display = "block"; }
-    else { n.style.display = "none"; }
-}
-function renderOrders(){
-    var u = user();
-    var ob = $("orders");
-    if(!ob) return;
-    if(!u || !u.orders || !u.orders.length){ ob.innerHTML = '<div class="empty">Chua co don hang</div>'; return; }
-    var html = "";
-    for(var i=0;i<u.orders.length;i++){
-        var o = u.orders[i];
-        html += '<div class="order-card"><div><div class="o-name">' + esc(o.name) + '</div>';
-        html += '<div class="o-time">' + new Date(o.time).toLocaleString("vi-VN");
-        if(o.code) html += " • " + esc(o.code);
-        html += '</div></div><div class="o-price">' + money(o.price) + '</div></div>';
-    }
-    ob.innerHTML = html;
-}
-function renderProfile(){
-    var u = user();
-    if(!u){
-        $("cName").textContent = "Dang nhap"; $("cBal").textContent = "0 VND"; $("cAv").textContent = "?";
-        $("guestView").style.display = "block"; $("profileView").style.display = "none";
-        return;
-    }
-    $("cName").textContent = u.email.split("@")[0];
-    $("cBal").textContent = Number(u.balance || 0).toLocaleString("vi-VN") + " VND";
-    $("cAv").textContent = u.email[0].toUpperCase();
-    $("guestView").style.display = "none"; $("profileView").style.display = "block";
-    $("pAv").textContent = u.email[0].toUpperCase(); $("pEmail").textContent = u.email;
-    $("pBal").textContent = money(u.balance); $("pOrderCount").textContent = (u.orders || []).length;
-    if(u.createdAt){ $("pJoined").textContent = "Thanh vien tu " + new Date(u.createdAt).toLocaleDateString("vi-VN"); }
-    else { $("pJoined").textContent = ""; }
-}
-function renderAdminCorner(){
-    var c = $("adminCorner");
-    if(!c) return;
-    if(isAdmin()) c.classList.add("on"); else c.classList.remove("on");
-}
-function renderAdmin(){
-    if(!isAdmin() || !adminUnlocked) return;
-    var pl = $("productList");
-    if(pl){
-        if(!products.length){ pl.innerHTML = '<div class="empty">Chua co san pham</div>'; }
-        else {
-            var html = "";
-            for(var i=0;i<products.length;i++){
-                var p = products[i];
-                var img = p.image ? esc(p.image) : "https://placehold.co/100x100/1f2937/5eead4?text=S";
-                html += '<div class="admin-item"><img src="' + img + '" onerror="this.src=\'https://placehold.co/100x100?text=S\'">';
-                html += '<div class="info"><div class="n">' + esc(p.name) + '</div>';
-                html += '<div class="p">' + money(p.price) + '</div></div>';
-                html += '<button class="del" onclick="delProduct(' + p.id + ')">x</button></div>';
-            }
-            pl.innerHTML = html;
-        }
-    }
-    var dl = $("depositList");
-    if(dl){
-        var pending = [];
-        for(var email in users){
-            if(!users.hasOwnProperty(email)) continue;
-            var deps = users[email].deposits || [];
-            for(var k=0;k<deps.length;k++){
-                if(deps[k].status === "Cho xac nhan"){ pending.push({ email: email, index: k, amount: deps[k].amount }); }
-            }
-        }
-        if(!pending.length){ dl.innerHTML = '<div class="empty">Khong co yeu cau nap</div>'; }
-        else {
-            var h = "";
-            for(var j=0;j<pending.length;j++){
-                var d = pending[j];
-                h += '<div class="dep-approve"><div><div class="amt">' + money(d.amount) + '</div>';
-                h += '<div class="email">' + esc(d.email) + '</div></div><div>';
-                h += '<button class="btn-ok" onclick="approveDeposit(\'' + d.email + '\',' + d.index + ')">Duyet</button>';
-                h += '<button class="btn-no" onclick="rejectDeposit(\'' + d.email + '\',' + d.index + ')">Huy</button>';
-                h += '</div></div>';
-            }
-            dl.innerHTML = h;
-        }
-    }
-}
-function renderAll(){
-    renderProducts();
-    renderNotice();
-    renderOrders();
-    renderProfile();
-    renderAdminCorner();
-    checkApprovedNotification();
-}
-function checkApprovedNotification(){
-    var u = user();
-    if(!u || !u.deposits) return;
-    for(var i=0;i<u.deposits.length;i++){
-        var d = u.deposits[i];
-        if(d.status === "Da duyet" && d.approvedAt && !d.notified){
-            users[cur].deposits[i].notified = true;
-            saveUsersToFirebase();
-            showToast("OK", "Ban da thanh toan thanh cong! So du " + money(d.amount) + " da duoc cong.", "success");
-            return;
-        }
-    }
-}
-function toggleDepHistory(){
-    var el = $("depHistory"), arw = $("depArrow");
-    if(el.style.display === "none"){
-        var u = user(); var list = (u && u.deposits) ? u.deposits : [];
-        if(!list.length){ el.innerHTML = '<div class="empty" style="padding:16px">Chua co lich su</div>'; }
-        else {
-            var html = "";
-            for(var i=0;i<list.length;i++){
-                var d = list[i];
-                var cls = "wait";
-                if(d.status === "Da duyet") cls = "done";
-                else if(d.status === "Da huy") cls = "cancel";
-                html += '<div class="dep-item"><div><b style="color:#fff">' + money(d.amount) + '</b><br><span style="color:#6b7280;font-size:10px">' + new Date(d.time).toLocaleString("vi-VN") + '</span></div><span class="st ' + cls + '">' + esc(d.status) + '</span></div>';
-            }
-            el.innerHTML = html;
-        }
-        el.style.display = "block"; arw.textContent = "▲";
-    } else { el.style.display = "none"; arw.textContent = "▼"; }
-}
-
-cur = localStorage.getItem("sammCurrent") || "";
-
-db.ref('shopData').on('value', function(snapshot){
-    var data = snapshot.val() || {};
-    users = data.users || {};
-    products = data.products || [];
-    notices = data.notices || [];
-    renderAll();
-    if($("p-admin").classList.contains("on") && adminUnlocked) renderAdmin();
-});
-
-loadAllData(function(){
-    go("shop");
-    renderAll();
 });
 </script>
 </body>

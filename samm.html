@@ -131,6 +131,7 @@ nav button.on{color:#0d9488}
 .btn-view-order{background:linear-gradient(135deg,#14b8a6,#0d9488);color:#fff}
 .btn-open-link{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
 .btn-close-modal{background:#f3f4f6;color:#374151}
+.back-home{position:fixed;top:70px;left:16px;z-index:40;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:8px 14px;color:#0d9488;font-weight:800;font-size:12px;cursor:pointer;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 @media(max-width:380px){.products-grid{grid-template-columns:1fr}.social-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -142,6 +143,8 @@ nav button.on{color:#0d9488}
 <div class="toast-icon" id="toastIcon">✓</div>
 <div class="toast-text" id="toastText"></div>
 </div>
+
+<a href="index.html" class="back-home">← SAMM.NET</a>
 
 <header>
 <div class="logo" id="secretLogo"><i>🎮</i>SAMM SHOP</div>
@@ -296,8 +299,8 @@ nav button.on{color:#0d9488}
 
 <div class="modal" id="authModal"><div class="mbox">
 <h2 id="aTitle">Đăng nhập</h2>
-<input id="aEmail" type="email" placeholder="Email">
-<input id="aPass" type="password" placeholder="Mật khẩu (>= 6 ký tự)">
+<input id="aUser" type="text" placeholder="Tên đăng nhập">
+<input id="aPass" type="password" placeholder="Mật khẩu (>= 6 ký tự, có HOA, thường, số, ký tự đặc biệt)">
 <div class="btns"><button class="bt" id="aSubmit" onclick="submitAuth()">Đăng nhập</button><button class="bd" onclick="switchAuth()">Đổi</button><button class="bd" onclick="closeAuth()">Đóng</button></div>
 </div></div>
 
@@ -344,12 +347,12 @@ waitForFirebase(function(){
     firebase.initializeApp(firebaseConfig);
     var db = firebase.database();
 
-    var ADMIN_EMAIL = "kaimomo2011@gmail.com";
-    var ADMIN_PASSWORD = "samm2026";
+    var ADMIN_USER = "admin";
+    var ADMIN_PASSWORD = "Admin@123";
     var users = {}, products = [], notices = [];
     var cur = "", deposit = null, timerId = null;
     var authMode = "login", adminUnlocked = false;
-    var currentOrderUrl = "", musicPlaying = false;
+    var currentOrderUrl = "";
 
     function el(id){ return document.getElementById(id); }
     function money(v){ return Number(v||0).toLocaleString("vi-VN")+" d"; }
@@ -362,6 +365,15 @@ waitForFirebase(function(){
             if(c === "'") return "&#39;";
             return c;
         });
+    }
+
+    function isStrongPass(p){
+        if(p.length < 6) return false;
+        if(!/[a-z]/.test(p)) return false;
+        if(!/[A-Z]/.test(p)) return false;
+        if(!/[0-9]/.test(p)) return false;
+        if(!/[!@#$%^&*(),.?":{}|<>_\-\[\]\\\/~`+=;']/.test(p)) return false;
+        return true;
     }
 
     function showToast(icon, text, type){
@@ -377,7 +389,7 @@ waitForFirebase(function(){
     }
 
     function currentUser(){ return (cur && users[cur]) ? users[cur] : null; }
-    function isAdmin(){ return cur === ADMIN_EMAIL; }
+    function isAdmin(){ return cur === ADMIN_USER; }
 
     function go(name){
         if(name === "admin" && (!isAdmin() || !adminUnlocked)) name = "shop";
@@ -425,7 +437,7 @@ waitForFirebase(function(){
     function chipClick(){ if(currentUser()) go("acc"); else openAuth(); }
     function openAuth(){
         el("authModal").classList.add("on");
-        el("aEmail").value = ""; el("aPass").value = "";
+        el("aUser").value = ""; el("aPass").value = "";
         authMode = "login";
         el("aTitle").textContent = "Dang nhap";
         el("aSubmit").textContent = "Dang nhap";
@@ -440,26 +452,26 @@ waitForFirebase(function(){
     }
 
     function submitAuth(){
-        var email = el("aEmail").value.trim().toLowerCase();
+        var user = el("aUser").value.trim();
         var pass = el("aPass").value;
-        if(!email || email.indexOf("@") < 1){ showToast("X", "Email khong hop le!", "error"); return; }
-        if(pass.length < 6){ showToast("X", "Mat khau can it nhat 6 ky tu!", "error"); return; }
+        if(!user || user.length < 3){ showToast("X", "Ten dang nhap >= 3 ky tu!", "error"); return; }
+        if(!isStrongPass(pass)){ showToast("X", "Mat khau phai >= 6 ky tu, gom chu HOA, thuong, so va ky tu dac biet!", "error"); return; }
         db.ref('shopData/users').once('value').then(function(s){
             var currentUsers = s.val() || {};
             if(authMode === "register"){
-                if(currentUsers[email]){ showToast("X", "Email da ton tai!", "error"); return; }
-                currentUsers[email] = { email: email, password: pass, balance: 0, orders: [], deposits: [], createdAt: Date.now() };
+                if(currentUsers[user]){ showToast("X", "Ten dang nhap da ton tai!", "error"); return; }
+                currentUsers[user] = { email: user, password: pass, balance: 0, orders: [], deposits: [], createdAt: Date.now() };
                 db.ref('shopData/users').set(currentUsers).then(function(){
-                    users = currentUsers; cur = email;
-                    localStorage.setItem("sammCurrent", email);
+                    users = currentUsers; cur = user;
+                    localStorage.setItem("sammCurrent", user);
                     closeAuth(); renderAll(); go("shop");
                     showToast("OK", "Dang ky thanh cong!", "success");
                 });
             } else {
-                if(!currentUsers[email]){ showToast("X", "Tai khoan chua ton tai!", "error"); return; }
-                if(currentUsers[email].password !== pass){ showToast("X", "Sai mat khau!", "error"); return; }
-                users = currentUsers; cur = email;
-                localStorage.setItem("sammCurrent", email);
+                if(!currentUsers[user]){ showToast("X", "Tai khoan chua ton tai!", "error"); return; }
+                if(currentUsers[user].password !== pass){ showToast("X", "Sai mat khau!", "error"); return; }
+                users = currentUsers; cur = user;
+                localStorage.setItem("sammCurrent", user);
                 closeAuth(); renderAll(); go("shop");
                 showToast("OK", "Dang nhap thanh cong!", "success");
             }
@@ -479,7 +491,7 @@ waitForFirebase(function(){
         var u = currentUser(); if(!u) return;
         var o = el("oldPass").value, n = el("newPass").value, n2 = el("newPass2").value;
         if(o !== u.password){ alert("Mat khau hien tai sai"); return; }
-        if(n.length < 6){ alert("Mat khau moi >= 6"); return; }
+        if(!isStrongPass(n)){ alert("Mat khau moi phai >= 6 ky tu, gom HOA, thuong, so, ky tu dac biet"); return; }
         if(n !== n2){ alert("Nhap lai khong khop"); return; }
         db.ref('shopData/users/' + cur + '/password').set(n).then(function(){
             users[cur].password = n;
@@ -676,7 +688,7 @@ waitForFirebase(function(){
             el("guestView").style.display = "block"; el("profileView").style.display = "none";
             return;
         }
-        el("cName").textContent = u.email.split("@")[0];
+        el("cName").textContent = u.email;
         el("cBal").textContent = Number(u.balance || 0).toLocaleString("vi-VN") + " VND";
         el("cAv").textContent = u.email[0].toUpperCase();
         el("guestView").style.display = "none"; el("profileView").style.display = "block";

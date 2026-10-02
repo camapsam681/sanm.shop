@@ -362,7 +362,15 @@ nav button.on{color:#5eead4}
 </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
+var firebaseConfig = {
+    databaseURL: "https://samm-shop-default-rtdb.firebaseio.com"
+};
+firebase.initializeApp(firebaseConfig);
+var db = firebase.database();
+
 var ADMIN_EMAIL = "kaimomo2011@gmail.com";
 var ADMIN_PASSWORD = "samm2026";
 
@@ -379,7 +387,6 @@ var musicPlaying = false;
 
 function $(id){ return document.getElementById(id); }
 function money(v){ return Number(v||0).toLocaleString("vi-VN")+" d"; }
-
 function esc(v){
     var s = String(v == null ? "" : v);
     return s.replace(/[&<>"']/g, function(c){
@@ -392,43 +399,32 @@ function esc(v){
     });
 }
 
-function loadUsers(){
-    try { users = JSON.parse(localStorage.getItem("sammUsers")||"{}"); }
-    catch(e){ users = {}; }
+function loadAllData(callback){
+    db.ref('shopData').once('value').then(function(snapshot){
+        var data = snapshot.val() || {};
+        users = data.users || {};
+        products = data.products || [];
+        notices = data.notices || [];
+        if(callback) callback();
+    }).catch(function(error){
+        console.error("Loi tai du lieu:", error);
+        showToast("X", "Khong the ket noi may chu!", "error");
+    });
 }
-function loadProducts(){
-    try { products = JSON.parse(localStorage.getItem("sammProducts")||"[]"); }
-    catch(e){ products = []; }
-}
-function loadNotices(){
-    try { notices = JSON.parse(localStorage.getItem("sammNotices")||"[]"); }
-    catch(e){ notices = []; }
-}
-function saveUsers(){ localStorage.setItem("sammUsers", JSON.stringify(users)); }
-function saveProducts(){ localStorage.setItem("sammProducts", JSON.stringify(products)); }
-function user(){ return (cur && users[cur]) ? users[cur] : null; }
-function isAdmin(){ return cur === ADMIN_EMAIL; }
 
-loadUsers(); loadProducts(); loadNotices();
-cur = localStorage.getItem("sammCurrent") || "";
+function saveUsersToFirebase(){ db.ref('shopData/users').set(users); }
+function saveProductsToFirebase(){ db.ref('shopData/products').set(products); }
+function saveNoticesToFirebase(){ db.ref('shopData/notices').set(notices); }
 
-/* NHẠC - ẨN NÚT, TỰ PHÁT */
 var bgMusic = $("bgMusic");
 function playMusic(){
     bgMusic.volume = 0.4;
-    bgMusic.play().then(function(){ musicPlaying = true; }).catch(function(){
-        musicPlaying = false;
-    });
+    bgMusic.play().then(function(){ musicPlaying = true; }).catch(function(){ musicPlaying = false; });
 }
-bgMusic.addEventListener("ended", function(){
-    bgMusic.currentTime = 0;
-    bgMusic.play();
-});
+bgMusic.addEventListener("ended", function(){ bgMusic.currentTime = 0; bgMusic.play(); });
 window.addEventListener("load", function(){ playMusic(); });
 document.addEventListener("click", function(){
-    if(!musicPlaying){
-        bgMusic.play().then(function(){ musicPlaying = true; }).catch(function(){});
-    }
+    if(!musicPlaying){ bgMusic.play().then(function(){ musicPlaying = true; }).catch(function(){}); }
 });
 
 function showToast(icon, text, type){
@@ -461,16 +457,13 @@ function openAdminPanel(){
     if(!adminUnlocked){ openAdminPass(); return; }
     go("admin");
 }
-function openAdminPass(){
-    $("adminPassModal").classList.add("on");
-    $("adminPassInput").value = "";
-}
+function openAdminPass(){ $("adminPassModal").classList.add("on"); $("adminPassInput").value = ""; }
 function closeAdminPass(){ $("adminPassModal").classList.remove("on"); }
 function verifyAdminPass(){
     if($("adminPassInput").value === ADMIN_PASSWORD){
         adminUnlocked = true;
         closeAdminPass();
-        showToast("OK", "Xác thực thành công!", "success");
+        showToast("OK", "Xac thuc thanh cong!", "success");
         setTimeout(function(){ go("admin"); }, 800);
     } else {
         alert("Mat khau admin sai!");
@@ -478,107 +471,66 @@ function verifyAdminPass(){
     }
 }
 
-function chipClick(){
-    if(user()) go("acc");
-    else openAuth();
-}
-function openAuth(){
-    $("authModal").classList.add("on");
-    $("aEmail").value = "";
-    $("aPass").value = "";
-}
+function chipClick(){ if(user()) go("acc"); else openAuth(); }
+function openAuth(){ $("authModal").classList.add("on"); $("aEmail").value = ""; $("aPass").value = ""; }
 function closeAuth(){ $("authModal").classList.remove("on"); }
 function switchAuth(){
     if(authMode === "login"){
-        authMode = "register";
-        $("aTitle").textContent = "Đăng ký";
-        $("aSubmit").textContent = "Đăng ký";
+        authMode = "register"; $("aTitle").textContent = "Dang ky"; $("aSubmit").textContent = "Dang ky";
     } else {
-        authMode = "login";
-        $("aTitle").textContent = "Đăng nhập";
-        $("aSubmit").textContent = "Đăng nhập";
+        authMode = "login"; $("aTitle").textContent = "Dang nhap"; $("aSubmit").textContent = "Dang nhap";
     }
 }
 function submitAuth(){
     var email = $("aEmail").value.trim().toLowerCase();
     var pass = $("aPass").value;
-    if(!email || email.indexOf("@") < 1){
-        showToast("X", "Email không hợp lệ!", "error");
-        return;
-    }
-    if(pass.length < 6){
-        showToast("X", "Mật khẩu cần ít nhất 6 ký tự!", "error");
-        return;
-    }
-    if(authMode === "register"){
-        if(users[email]){
-            showToast("X", "Email đã tồn tại!", "error");
-            return;
+    if(!email || email.indexOf("@") < 1){ showToast("X", "Email khong hop le!", "error"); return; }
+    if(pass.length < 6){ showToast("X", "Mat khau can it nhat 6 ky tu!", "error"); return; }
+    
+    loadAllData(function(){
+        if(authMode === "register"){
+            if(users[email]){ showToast("X", "Email da ton tai!", "error"); return; }
+            users[email] = { email: email, password: pass, balance: 0, orders: [], deposits: [], createdAt: Date.now() };
+            saveUsersToFirebase();
+            cur = email;
+            localStorage.setItem("sammCurrent", email);
+            closeAuth(); renderAll(); go("shop");
+            showToast("OK", "Dang ky thanh cong!", "success");
+        } else {
+            if(!users[email]){ showToast("X", "Tai khoan chua ton tai!", "error"); return; }
+            if(users[email].password !== pass){ showToast("X", "Sai mat khau!", "error"); return; }
+            cur = email;
+            localStorage.setItem("sammCurrent", email);
+            closeAuth(); renderAll(); go("shop");
+            showToast("OK", "Dang nhap thanh cong!", "success");
         }
-        users[email] = {
-            email: email, password: pass, balance: 0,
-            orders: [], deposits: [], createdAt: Date.now()
-        };
-        saveUsers();
-        cur = email;
-        localStorage.setItem("sammCurrent", email);
-        closeAuth();
-        renderAll();
-        go("shop");
-        showToast("OK", "Đăng ký thành công!", "success");
-    } else {
-        if(!users[email]){
-            showToast("X", "Tài khoản chưa tồn tại!", "error");
-            return;
-        }
-        if(users[email].password !== pass){
-            showToast("X", "Sai mật khẩu!", "error");
-            return;
-        }
-        cur = email;
-        localStorage.setItem("sammCurrent", email);
-        closeAuth();
-        renderAll();
-        go("shop");
-        showToast("OK", "Đăng nhập thành công!", "success");
-    }
+    });
 }
 function doLogout(){
-    if(!confirm("Đăng xuất?")) return;
-    cur = "";
-    adminUnlocked = false;
+    if(!confirm("Dang xuat?")) return;
+    cur = ""; adminUnlocked = false;
     localStorage.removeItem("sammCurrent");
-    renderAll();
-    go("shop");
+    renderAll(); go("shop");
 }
 
-function openChangePass(){
-    $("passModal").classList.add("on");
-    $("oldPass").value = "";
-    $("newPass").value = "";
-    $("newPass2").value = "";
-}
+function openChangePass(){ $("passModal").classList.add("on"); $("oldPass").value = ""; $("newPass").value = ""; $("newPass2").value = ""; }
 function closeChangePass(){ $("passModal").classList.remove("on"); }
 function submitChangePass(){
-    var u = user();
-    if(!u) return;
-    var o = $("oldPass").value;
-    var n = $("newPass").value;
-    var n2 = $("newPass2").value;
+    var u = user(); if(!u) return;
+    var o = $("oldPass").value, n = $("newPass").value, n2 = $("newPass2").value;
     if(o !== u.password){ alert("Mat khau hien tai sai"); return; }
     if(n.length < 6){ alert("Mat khau moi >= 6"); return; }
     if(n !== n2){ alert("Nhap lai khong khop"); return; }
-    users[cur].password = n;
-    saveUsers();
-    closeChangePass();
-    showToast("OK", "Đổi mật khẩu thành công!", "success");
+    loadAllData(function(){
+        users[cur].password = n;
+        saveUsersToFirebase();
+        closeChangePass();
+        showToast("OK", "Doi mat khau thanh cong!", "success");
+    });
 }
 
 var amtInput = $("amt");
-amtInput.oninput = function(e){
-    var v = e.target.value.replace(/\D/g, "");
-    e.target.value = v ? Number(v).toLocaleString("vi-VN") : "";
-};
+amtInput.oninput = function(e){ var v = e.target.value.replace(/\D/g, ""); e.target.value = v ? Number(v).toLocaleString("vi-VN") : ""; };
 var qbs = document.querySelectorAll(".quick button");
 for(var qi=0; qi<qbs.length; qi++){
     qbs[qi].onclick = function(){
@@ -589,290 +541,228 @@ for(var qi=0; qi<qbs.length; qi++){
 }
 function createDeposit(){
     if(!user()){ openAuth(); return; }
-    if(deposit){ alert("Đang có phiên nạp!"); return; }
+    if(deposit){ alert("Dang co phien nap!"); return; }
     var amt = Number(amtInput.value.replace(/\D/g, ""));
-    if(amt < 10000){ alert("Tối thiểu 10.000 đ"); return; }
-    if(amt > 50000000){ alert("Tối đa 50.000.000 đ"); return; }
-    deposit = { amount: amt, expiresAt: Date.now() + 600000 };
-    users[cur].deposits = users[cur].deposits || [];
-    users[cur].deposits.unshift({ amount: amt, status: "Chờ xác nhận", time: Date.now() });
-    saveUsers();
-    $("qrAmt").textContent = money(amt);
-    $("form").style.display = "none";
-    $("warn").style.display = "none";
-    $("qr").style.display = "block";
-    startTimer();
-    showToast("OK", "Yêu cầu nạp đã gửi! Chờ 1-3 phút.", "info");
+    if(amt < 10000){ alert("Toi thieu 10.000 d"); return; }
+    if(amt > 50000000){ alert("Toi da 50.000.000 d"); return; }
+    
+    loadAllData(function(){
+        deposit = { amount: amt, expiresAt: Date.now() + 600000 };
+        users[cur].deposits = users[cur].deposits || [];
+        users[cur].deposits.unshift({ amount: amt, status: "Cho xac nhan", time: Date.now() });
+        saveUsersToFirebase();
+        $("qrAmt").textContent = money(amt);
+        $("form").style.display = "none"; $("warn").style.display = "none"; $("qr").style.display = "block";
+        startTimer();
+        showToast("OK", "Yeu cau nap da gui! Cho 1-3 phut.", "info");
+    });
 }
 function startTimer(){
-    clearInterval(timerId);
-    $("timer").style.color = "#fff";
-    tick();
+    clearInterval(timerId); $("timer").style.color = "#fff"; tick();
     timerId = setInterval(tick, 1000);
 }
 function tick(){
     if(!deposit) return;
     var r = Math.max(0, deposit.expiresAt - Date.now());
-    var m = Math.floor(r / 60000);
-    var s = Math.floor((r % 60000) / 1000);
+    var m = Math.floor(r / 60000), s = Math.floor((r % 60000) / 1000);
     $("timer").textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
-    if(r <= 0){
-        clearInterval(timerId);
-        $("timer").style.color = "#ef4444";
-        cancelDeposit(false);
-    }
+    if(r <= 0){ clearInterval(timerId); $("timer").style.color = "#ef4444"; cancelDeposit(false); }
 }
 function cancelDeposit(ask){
-    if(ask && !confirm("Hủy yêu cầu nạp?")) return;
-    clearInterval(timerId);
-    timerId = null;
-    deposit = null;
-    $("qr").style.display = "none";
-    $("form").style.display = "block";
-    $("warn").style.display = "block";
-    $("timer").style.color = "#fff";
-    $("timer").textContent = "10:00";
+    if(ask && !confirm("Huy yeu cau nap?")) return;
+    clearInterval(timerId); timerId = null; deposit = null;
+    $("qr").style.display = "none"; $("form").style.display = "block"; $("warn").style.display = "block";
+    $("timer").style.color = "#fff"; $("timer").textContent = "10:00";
 }
 
 function buy(id){
-    if(!user()){
-        openAuth();
-        showToast("!", "Vui lòng đăng nhập!", "info");
-        return;
-    }
-    var p = null;
-    for(var i=0;i<products.length;i++){
-        if(products[i].id === id){ p = products[i]; break; }
-    }
-    if(!p){ alert("Sản phẩm không tồn tại!"); return; }
-    var price = Number(p.price || 0);
-    if(Number(user().balance || 0) < price){
-        showToast("!", "Số dư không đủ! Cần " + money(price), "info");
-        setTimeout(function(){ go("nap"); }, 800);
-        return;
-    }
-    if(!confirm("Mua \"" + p.name + "\" với giá " + money(price) + "?")) return;
-    var t = Date.now();
-    var code = "DH" + String(t).slice(-8);
-    users = JSON.parse(localStorage.getItem("sammUsers")||"{}");
-    users[cur].balance = Number(users[cur].balance || 0) - price;
-    users[cur].orders = users[cur].orders || [];
-    users[cur].orders.unshift({ name: p.name, price: price, time: t, code: code, url: p.url || "" });
-    saveUsers();
-    renderAll();
-    currentOrderUrl = p.url || "";
-    $("odName").textContent = p.name;
-    $("odPrice").textContent = money(price);
-    $("odTime").textContent = new Date(t).toLocaleString("vi-VN");
-    $("odCode").textContent = code;
-    if(p.url) $("odLinkBtn").style.display = "block";
-    else $("odLinkBtn").style.display = "none";
-    $("orderModal").classList.add("on");
+    if(!user()){ openAuth(); showToast("!", "Vui long dang nhap!", "info"); return; }
+    
+    loadAllData(function(){
+        var p = null;
+        for(var i=0;i<products.length;i++){ if(products[i].id === id){ p = products[i]; break; } }
+        if(!p){ alert("San pham khong ton tai!"); return; }
+        var price = Number(p.price || 0);
+        if(Number(users[cur].balance || 0) < price){
+            showToast("!", "So du khong du! Can " + money(price), "info");
+            setTimeout(function(){ go("nap"); }, 800);
+            return;
+        }
+        if(!confirm("Mua \"" + p.name + "\" voi gia " + money(price) + "?")) return;
+        
+        var t = Date.now();
+        var code = "DH" + String(t).slice(-8);
+        users[cur].balance = Number(users[cur].balance || 0) - price;
+        users[cur].orders = users[cur].orders || [];
+        users[cur].orders.unshift({ name: p.name, price: price, time: t, code: code, url: p.url || "" });
+        saveUsersToFirebase();
+        renderAll();
+        currentOrderUrl = p.url || "";
+        $("odName").textContent = p.name; $("odPrice").textContent = money(price);
+        $("odTime").textContent = new Date(t).toLocaleString("vi-VN"); $("odCode").textContent = code;
+        if(p.url) $("odLinkBtn").style.display = "block"; else $("odLinkBtn").style.display = "none";
+        $("orderModal").classList.add("on");
+    });
 }
 function closeOrderModal(){ $("orderModal").classList.remove("on"); }
 function openOrderLink(){ if(currentOrderUrl) window.open(currentOrderUrl, "_blank"); }
-function viewOrderInHistory(){
-    closeOrderModal();
-    go("don");
-    showToast("OK", "Đã chuyển đến Đơn hàng!", "success");
-}
+function viewOrderInHistory(){ closeOrderModal(); go("don"); showToast("OK", "Da chuyen den Don hang!", "success"); }
 
-function checkAdmin(){
-    if(!isAdmin()){ alert("Bạn không phải admin!"); return false; }
-    if(!adminUnlocked){ alert("Chưa xác thực!"); return false; }
-    return true;
-}
+function checkAdmin(){ if(!isAdmin()){ alert("Ban khong phai admin!"); return false; } if(!adminUnlocked){ alert("Chua xac thuc!"); return false; } return true; }
+
 function addProduct(){
     if(!checkAdmin()) return;
-    var name = $("pName").value.trim();
-    var desc = $("pDesc").value.trim();
-    var price = Number($("pPrice").value);
-    var image = $("pImage").value.trim();
-    var url = $("pUrl").value.trim();
-    if(!name){ alert("Nhập tên sản phẩm"); return; }
-    if(!price || price <= 0){ alert("Nhập giá hợp lệ"); return; }
-    products.unshift({ id: Date.now(), name: name, desc: desc, price: price, image: image, url: url, createdAt: Date.now() });
-    saveProducts();
-    $("pName").value = ""; $("pDesc").value = "";
-    $("pPrice").value = ""; $("pImage").value = ""; $("pUrl").value = "";
-    showToast("OK", "Đã đẩy sản phẩm!", "success");
-    renderAll();
+    var name = $("pName").value.trim(), desc = $("pDesc").value.trim();
+    var price = Number($("pPrice").value), image = $("pImage").value.trim(), url = $("pUrl").value.trim();
+    if(!name){ alert("Nhap ten san pham"); return; }
+    if(!price || price <= 0){ alert("Nhap gia hop le"); return; }
+    
+    loadAllData(function(){
+        products.unshift({ id: Date.now(), name: name, desc: desc, price: price, image: image, url: url, createdAt: Date.now() });
+        saveProductsToFirebase();
+        $("pName").value = ""; $("pDesc").value = ""; $("pPrice").value = ""; $("pImage").value = ""; $("pUrl").value = "";
+        showToast("OK", "Da day san pham!", "success");
+        renderAll();
+    });
 }
 function delProduct(id){
     if(!checkAdmin()) return;
-    if(!confirm("Xóa sản phẩm?")) return;
-    var arr = [];
-    for(var i=0;i<products.length;i++){
-        if(products[i].id !== id) arr.push(products[i]);
-    }
-    products = arr;
-    saveProducts();
-    renderAll();
+    if(!confirm("Xoa san pham?")) return;
+    loadAllData(function(){
+        var arr = [];
+        for(var i=0;i<products.length;i++){ if(products[i].id !== id) arr.push(products[i]); }
+        products = arr;
+        saveProductsToFirebase();
+        renderAll();
+    });
 }
 function setNotice(){
     if(!checkAdmin()) return;
     var text = $("nText").value.trim();
-    if(!text){ alert("Nhập nội dung"); return; }
-    notices = [{ text: text, time: Date.now() }];
-    localStorage.setItem("sammNotices", JSON.stringify(notices));
-    $("nText").value = "";
-    showToast("OK", "Đã gửi thông báo!", "success");
-    renderNotice();
+    if(!text){ alert("Nhap noi dung"); return; }
+    loadAllData(function(){
+        notices = [{ text: text, time: Date.now() }];
+        saveNoticesToFirebase();
+        $("nText").value = "";
+        showToast("OK", "Da gui thong bao!", "success");
+        renderNotice();
+    });
 }
 function clearNotice(){
     if(!checkAdmin()) return;
-    notices = [];
-    localStorage.setItem("sammNotices", "[]");
-    renderNotice();
+    notices = []; saveNoticesToFirebase(); renderNotice();
 }
 function approveDeposit(email, index){
     if(!checkAdmin()) return;
-    loadUsers();
-    if(!users[email] || !users[email].deposits || !users[email].deposits[index]) return;
-    var d = users[email].deposits[index];
-    if(d.status === "Đã duyệt") return;
-    users[email].balance = Number(users[email].balance || 0) + Number(d.amount);
-    users[email].deposits[index].status = "Đã duyệt";
-    users[email].deposits[index].approvedAt = Date.now();
-    saveUsers();
-    showToast("OK", "Đã duyệt " + money(d.amount), "success");
-    renderAll();
+    loadAllData(function(){
+        if(!users[email] || !users[email].deposits || !users[email].deposits[index]) return;
+        var d = users[email].deposits[index];
+        if(d.status === "Da duyet") return;
+        users[email].balance = Number(users[email].balance || 0) + Number(d.amount);
+        users[email].deposits[index].status = "Da duyet";
+        users[email].deposits[index].approvedAt = Date.now();
+        saveUsersToFirebase();
+        showToast("OK", "Da duyet " + money(d.amount), "success");
+        renderAll();
+    });
 }
 function rejectDeposit(email, index){
     if(!checkAdmin()) return;
-    loadUsers();
-    if(!users[email] || !users[email].deposits || !users[email].deposits[index]) return;
-    users[email].deposits[index].status = "Đã hủy";
-    saveUsers();
-    renderAll();
+    loadAllData(function(){
+        if(!users[email] || !users[email].deposits || !users[email].deposits[index]) return;
+        users[email].deposits[index].status = "Da huy";
+        saveUsersToFirebase();
+        renderAll();
+    });
 }
 function clearAllProducts(){
     if(!checkAdmin()) return;
-    if(!confirm("Xóa TẤT CẢ sản phẩm?")) return;
-    products = [];
-    saveProducts();
-    renderAll();
+    if(!confirm("Xoa TAT CA san pham?")) return;
+    products = []; saveProductsToFirebase(); renderAll();
 }
 function clearAllUsers(){
     if(!checkAdmin()) return;
-    if(!confirm("Xóa TẤT CẢ users?")) return;
-    users = {};
-    cur = "";
-    adminUnlocked = false;
-    localStorage.setItem("sammUsers", "{}");
+    if(!confirm("Xoa TAT CA users?")) return;
+    users = {}; cur = ""; adminUnlocked = false;
+    saveUsersToFirebase();
     localStorage.removeItem("sammCurrent");
-    renderAll();
-    go("shop");
+    renderAll(); go("shop");
 }
 
 function renderProducts(){
-    loadProducts();
     var box = $("products");
     if(!box) return;
-    if(!products.length){
-        box.innerHTML = '<div class="empty" style="grid-column:1/-1">Chưa có sản phẩm</div>';
-        return;
-    }
+    if(!products.length){ box.innerHTML = '<div class="empty" style="grid-column:1/-1">Chua co san pham</div>'; return; }
     var html = "";
     for(var i=0;i<products.length;i++){
         var p = products[i];
         var img = p.image ? esc(p.image) : "https://placehold.co/400x300/0f141b/5eead4?text=SAMM";
-        html += '<div class="product">';
-        html += '<div class="img-wrap">';
+        html += '<div class="product"><div class="img-wrap">';
         html += '<img src="' + img + '" onerror="this.src=\'https://placehold.co/400x300?text=SAMM\'">';
-        html += '<div class="badge">HOT</div>';
-        html += '</div>';
-        html += '<div class="product-body">';
+        html += '<div class="badge">HOT</div></div><div class="product-body">';
         html += '<div class="product-title">' + esc(p.name) + '</div>';
         html += '<div class="product-desc">' + esc(p.desc || "") + '</div>';
         html += '<div class="product-price">' + money(p.price) + '</div>';
-        html += '<button class="buy" onclick="buy(' + p.id + ')">Mua ngay</button>';
-        html += '</div></div>';
+        html += '<button class="buy" onclick="buy(' + p.id + ')">Mua ngay</button></div></div>';
     }
     box.innerHTML = html;
 }
 function renderNotice(){
-    loadNotices();
     var n = $("notice");
     if(!n) return;
-    if(notices.length){
-        n.innerHTML = "TB: " + esc(notices[0].text);
-        n.style.display = "block";
-    } else {
-        n.style.display = "none";
-    }
+    if(notices.length){ n.innerHTML = "TB: " + esc(notices[0].text); n.style.display = "block"; }
+    else { n.style.display = "none"; }
 }
 function renderOrders(){
     var u = user();
     var ob = $("orders");
     if(!ob) return;
-    if(!u || !u.orders || !u.orders.length){
-        ob.innerHTML = '<div class="empty">Chưa có đơn hàng</div>';
-        return;
-    }
+    if(!u || !u.orders || !u.orders.length){ ob.innerHTML = '<div class="empty">Chua co don hang</div>'; return; }
     var html = "";
     for(var i=0;i<u.orders.length;i++){
         var o = u.orders[i];
-        html += '<div class="order-card">';
-        html += '<div><div class="o-name">' + esc(o.name) + '</div>';
+        html += '<div class="order-card"><div><div class="o-name">' + esc(o.name) + '</div>';
         html += '<div class="o-time">' + new Date(o.time).toLocaleString("vi-VN");
         if(o.code) html += " • " + esc(o.code);
-        html += '</div></div>';
-        html += '<div class="o-price">' + money(o.price) + '</div>';
-        html += '</div>';
+        html += '</div></div><div class="o-price">' + money(o.price) + '</div></div>';
     }
     ob.innerHTML = html;
 }
 function renderProfile(){
     var u = user();
     if(!u){
-        $("cName").textContent = "Đăng nhập";
-        $("cBal").textContent = "0 VND";
-        $("cAv").textContent = "?";
-        $("guestView").style.display = "block";
-        $("profileView").style.display = "none";
+        $("cName").textContent = "Dang nhap"; $("cBal").textContent = "0 VND"; $("cAv").textContent = "?";
+        $("guestView").style.display = "block"; $("profileView").style.display = "none";
         return;
     }
     $("cName").textContent = u.email.split("@")[0];
     $("cBal").textContent = Number(u.balance || 0).toLocaleString("vi-VN") + " VND";
     $("cAv").textContent = u.email[0].toUpperCase();
-    $("guestView").style.display = "none";
-    $("profileView").style.display = "block";
-    $("pAv").textContent = u.email[0].toUpperCase();
-    $("pEmail").textContent = u.email;
-    $("pBal").textContent = money(u.balance);
-    $("pOrderCount").textContent = (u.orders || []).length;
-    if(u.createdAt){
-        $("pJoined").textContent = "Thành viên từ " + new Date(u.createdAt).toLocaleDateString("vi-VN");
-    } else {
-        $("pJoined").textContent = "";
-    }
+    $("guestView").style.display = "none"; $("profileView").style.display = "block";
+    $("pAv").textContent = u.email[0].toUpperCase(); $("pEmail").textContent = u.email;
+    $("pBal").textContent = money(u.balance); $("pOrderCount").textContent = (u.orders || []).length;
+    if(u.createdAt){ $("pJoined").textContent = "Thanh vien tu " + new Date(u.createdAt).toLocaleDateString("vi-VN"); }
+    else { $("pJoined").textContent = ""; }
 }
 function renderAdminCorner(){
     var c = $("adminCorner");
     if(!c) return;
-    if(isAdmin()) c.classList.add("on");
-    else c.classList.remove("on");
+    if(isAdmin()) c.classList.add("on"); else c.classList.remove("on");
 }
 function renderAdmin(){
     if(!isAdmin() || !adminUnlocked) return;
-    loadProducts();
-    loadUsers();
     var pl = $("productList");
     if(pl){
-        if(!products.length){
-            pl.innerHTML = '<div class="empty">Chưa có sản phẩm</div>';
-        } else {
+        if(!products.length){ pl.innerHTML = '<div class="empty">Chua co san pham</div>'; }
+        else {
             var html = "";
             for(var i=0;i<products.length;i++){
                 var p = products[i];
                 var img = p.image ? esc(p.image) : "https://placehold.co/100x100/1f2937/5eead4?text=S";
-                html += '<div class="admin-item">';
-                html += '<img src="' + img + '" onerror="this.src=\'https://placehold.co/100x100?text=S\'">';
+                html += '<div class="admin-item"><img src="' + img + '" onerror="this.src=\'https://placehold.co/100x100?text=S\'">';
                 html += '<div class="info"><div class="n">' + esc(p.name) + '</div>';
                 html += '<div class="p">' + money(p.price) + '</div></div>';
-                html += '<button class="del" onclick="delProduct(' + p.id + ')">x</button>';
-                html += '</div>';
+                html += '<button class="del" onclick="delProduct(' + p.id + ')">x</button></div>';
             }
             pl.innerHTML = html;
         }
@@ -884,23 +774,18 @@ function renderAdmin(){
             if(!users.hasOwnProperty(email)) continue;
             var deps = users[email].deposits || [];
             for(var k=0;k<deps.length;k++){
-                if(deps[k].status === "Chờ xác nhận"){
-                    pending.push({ email: email, index: k, amount: deps[k].amount });
-                }
+                if(deps[k].status === "Cho xac nhan"){ pending.push({ email: email, index: k, amount: deps[k].amount }); }
             }
         }
-        if(!pending.length){
-            dl.innerHTML = '<div class="empty">Không có yêu cầu nạp</div>';
-        } else {
+        if(!pending.length){ dl.innerHTML = '<div class="empty">Khong co yeu cau nap</div>'; }
+        else {
             var h = "";
             for(var j=0;j<pending.length;j++){
                 var d = pending[j];
-                h += '<div class="dep-approve">';
-                h += '<div><div class="amt">' + money(d.amount) + '</div>';
-                h += '<div class="email">' + esc(d.email) + '</div></div>';
-                h += '<div>';
-                h += '<button class="btn-ok" onclick="approveDeposit(\'' + d.email + '\',' + d.index + ')">Duyệt</button>';
-                h += '<button class="btn-no" onclick="rejectDeposit(\'' + d.email + '\',' + d.index + ')">Hủy</button>';
+                h += '<div class="dep-approve"><div><div class="amt">' + money(d.amount) + '</div>';
+                h += '<div class="email">' + esc(d.email) + '</div></div><div>';
+                h += '<button class="btn-ok" onclick="approveDeposit(\'' + d.email + '\',' + d.index + ')">Duyet</button>';
+                h += '<button class="btn-no" onclick="rejectDeposit(\'' + d.email + '\',' + d.index + ')">Huy</button>';
                 h += '</div></div>';
             }
             dl.innerHTML = h;
@@ -908,7 +793,6 @@ function renderAdmin(){
     }
 }
 function renderAll(){
-    loadUsers(); loadProducts(); loadNotices();
     renderProducts();
     renderNotice();
     renderOrders();
@@ -921,55 +805,49 @@ function checkApprovedNotification(){
     if(!u || !u.deposits) return;
     for(var i=0;i<u.deposits.length;i++){
         var d = u.deposits[i];
-        if(d.status === "Đã duyệt" && d.approvedAt && !d.notified){
+        if(d.status === "Da duyet" && d.approvedAt && !d.notified){
             users[cur].deposits[i].notified = true;
-            saveUsers();
-            showToast("OK", "Bạn đã thanh toán thành công! Số dư " + money(d.amount) + " đã được cộng.", "success");
+            saveUsersToFirebase();
+            showToast("OK", "Ban da thanh toan thanh cong! So du " + money(d.amount) + " da duoc cong.", "success");
             return;
         }
     }
 }
 function toggleDepHistory(){
-    var el = $("depHistory");
-    var arw = $("depArrow");
+    var el = $("depHistory"), arw = $("depArrow");
     if(el.style.display === "none"){
-        var u = user();
-        var list = (u && u.deposits) ? u.deposits : [];
-        if(!list.length){
-            el.innerHTML = '<div class="empty" style="padding:16px">Chưa có lịch sử</div>';
-        } else {
+        var u = user(); var list = (u && u.deposits) ? u.deposits : [];
+        if(!list.length){ el.innerHTML = '<div class="empty" style="padding:16px">Chua co lich su</div>'; }
+        else {
             var html = "";
             for(var i=0;i<list.length;i++){
                 var d = list[i];
                 var cls = "wait";
-                if(d.status === "Đã duyệt") cls = "done";
-                else if(d.status === "Đã hủy") cls = "cancel";
+                if(d.status === "Da duyet") cls = "done";
+                else if(d.status === "Da huy") cls = "cancel";
                 html += '<div class="dep-item"><div><b style="color:#fff">' + money(d.amount) + '</b><br><span style="color:#6b7280;font-size:10px">' + new Date(d.time).toLocaleString("vi-VN") + '</span></div><span class="st ' + cls + '">' + esc(d.status) + '</span></div>';
             }
             el.innerHTML = html;
         }
-        el.style.display = "block";
-        arw.textContent = "▲";
-    } else {
-        el.style.display = "none";
-        arw.textContent = "▼";
-    }
+        el.style.display = "block"; arw.textContent = "▲";
+    } else { el.style.display = "none"; arw.textContent = "▼"; }
 }
 
-window.addEventListener("storage", function(e){
-    if(e.key === "sammProducts" || e.key === "sammNotices" || e.key === "sammUsers" || e.key === "sammCurrent"){
-        cur = localStorage.getItem("sammCurrent") || "";
-        renderAll();
-        if($("p-admin").classList.contains("on") && adminUnlocked) renderAdmin();
-    }
-});
-setInterval(function(){
-    if($("p-admin").classList.contains("on") && adminUnlocked) renderAdmin();
-    checkApprovedNotification();
-}, 3000);
+cur = localStorage.getItem("sammCurrent") || "";
 
-go("shop");
-renderAll();
+db.ref('shopData').on('value', function(snapshot){
+    var data = snapshot.val() || {};
+    users = data.users || {};
+    products = data.products || [];
+    notices = data.notices || [];
+    renderAll();
+    if($("p-admin").classList.contains("on") && adminUnlocked) renderAdmin();
+});
+
+loadAllData(function(){
+    go("shop");
+    renderAll();
+});
 </script>
 </body>
 </html>

@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SAMM SHOP</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+:root{--bg:#050810;--card:#0f141b;--teal:#5eead4;--muted:#6b7280}
+body{background:var(--bg);color:#e5e7eb;padding-bottom:75px;min-height:100vh}
+header{position:sticky;top:0;background:rgba(5,8,16,.9);backdrop-filter:blur(20px);border-bottom:1px solid #ffffff10;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;z-index:10}
+.logo{color:var(--teal);font-weight:900;font-size:15px;display:flex;align-items:center;gap:8px}
+.logo i{width:32px;height:32px;background:linear-gradient(135deg,#5eead4,#0d9488);border-radius:9px;display:flex;align-items:center;justify-content:center;font-style:normal}
+.chip{display:flex;align-items:center;gap:8px;background:#111827;border:1px solid #ffffff10;border-radius:12px;padding:5px 5px 5px 12px;cursor:pointer}
+.chip .name{font-weight:800;color:#fff;font-size:12px}
+.chip .bal{color:var(--teal);font-size:11px;font-weight:700}
+.chip .av{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000;display:flex;align-items:center;justify-content:center;font-weight:900}
+main{padding:16px}
+.title{display:flex;align-items:center;gap:10px;color:#fff;font-size:22px;font-weight:900;text-transform:uppercase;margin:8px 0 18px}
+.title::before{content:"";width:36px;height:32px;border:2.5px solid var(--teal);border-radius:9px;flex-shrink:0}
+.card{background:var(--card);border:1px solid #ffffff10;border-radius:16px;padding:18px}
+label{color:var(--teal);font-size:11px;font-weight:800;text-transform:uppercase;display:block;margin-bottom:10px}
+.amt{position:relative;margin-bottom:14px}
+.amt input{width:100%;padding:18px 45px 18px 16px;background:#050810;border:2px solid #ffffff10;border-radius:12px;color:#fff;font-size:22px;font-weight:800;outline:none}
+.amt input:focus{border-color:var(--teal)}
+.amt span{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--teal);font-size:20px;font-weight:900}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.quick button{padding:14px 2px;background:#050810;border:1.5px solid #ffffff10;border-radius:10px;color:#9ca3af;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
+.quick button.on{border-color:var(--teal);color:var(--teal);background:#5eead420}
+.create{width:100%;padding:16px;background:linear-gradient(135deg,#5eead4,#22d3ee);border:0;border-radius:12px;color:#050810;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;text-transform:uppercase}
+.warn{margin-top:16px;padding:16px;background:var(--card);border:1px solid #ffffff10;border-left:3px solid var(--teal);border-radius:12px}
+.warn h3{color:var(--teal);font-size:12px;font-weight:900;text-transform:uppercase;margin-bottom:12px}
+.warn li{color:#9ca3af;font-size:12px;line-height:1.6;padding-left:14px;position:relative;margin-bottom:8px;list-style:none}
+.warn li::before{content:"";position:absolute;left:0;top:7px;width:5px;height:5px;background:var(--teal);border-radius:50%}
+.qr{background:var(--card);border:1px solid #ffffff10;border-radius:16px;padding:20px;text-align:center}
+.qr img{background:#fff;padding:16px;border-radius:12px;width:100%;max-width:240px;border:2px solid var(--teal);margin-bottom:16px}
+.timer{font-size:40px;font-weight:900;letter-spacing:3px;color:#fff;margin:8px 0}
+.timer-lb{color:var(--muted);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+.cancel{width:100%;padding:14px;background:#ef444420;border:1.5px solid #ef444450;border-radius:10px;color:#ef4444;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
+.info{color:#9ca3af;font-size:11px;line-height:1.6;margin-top:14px;padding:12px;background:#050810;border-radius:10px}
+.info b{color:var(--teal)}
+nav{position:fixed;bottom:0;left:0;right:0;background:rgba(5,8,16,.95);backdrop-filter:blur(20px);border-top:1px solid #ffffff10;display:grid;grid-template-columns:repeat(5,1fr);z-index:50;padding:6px 0}
+nav button{background:none;border:0;color:#4b5563;font-size:9px;font-weight:800;padding:6px 2px;cursor:pointer;font-family:inherit;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:3px}
+nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2}
+nav button.on{color:var(--teal)}
+.page{display:none}
+.page.on{display:block}
+.empty{padding:50px 20px;text-align:center;color:var(--muted);font-size:13px}
+.modal{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;padding:18px;z-index:100}
+.modal.on{display:flex}
+.mbox{background:var(--card);border:1px solid #5eead430;border-radius:18px;padding:22px;width:100%;max-width:400px}
+.mbox h2{color:var(--teal);font-size:17px;text-transform:uppercase;margin-bottom:16px}
+.mbox input{width:100%;padding:13px;margin-bottom:10px;background:#050810;border:1.5px solid #ffffff10;border-radius:10px;color:#fff;outline:none;font-family:inherit;font-size:14px}
+.mbox input:focus{border-color:var(--teal)}
+.btns{display:flex;gap:8px;margin-top:6px}
+.btns button{flex:1;padding:12px;border:0;border-radius:10px;font-weight:800;cursor:pointer;font-family:inherit;font-size:12px;text-transform:uppercase}
+.bt{background:linear-gradient(135deg,#5eead4,#22d3ee);color:#050810}
+.bd{background:#1f2937;color:#fff}
+.profile-head{text-align:center;padding:22px 0 18px;border-bottom:1px solid #ffffff10;margin-bottom:18px}
+.big-av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000;font-size:30px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.profile-head .email{color:var(--teal);font-size:13px;font-weight:700;margin-bottom:4px}
+.profile-head .joined{color:var(--muted);font-size:10px}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid #ffffff10;border-radius:12px;padding:14px;text-align:center}
+.stat .lb{color:var(--muted);font-size:10px;text-transform:uppercase;margin-bottom:6px;font-weight:800}
+.stat .vl{color:var(--teal);font-size:18px;font-weight:900}
+.menu-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--card);border:1px solid #ffffff10;border-radius:12px;margin-bottom:8px;cursor:pointer;font-size:13px;font-weight:600}
+.menu-item .ico{margin-right:10px}
+.menu-item .arw{color:var(--muted)}
+.dep-item{background:#050810;border:1px solid #ffffff10;border-radius:10px;padding:12px 14px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.dep-item .st{font-size:10px;padding:3px 8px;border-radius:5px;font-weight:800;text-transform:uppercase}
+.st.wait{background:#fbbf2420;color:#fbbf24}
+.st.done{background:#22c55e20;color:#22c55e}
+.st.cancel{background:#ef444420;color:#ef4444}
+.notice-box{padding:12px 14px;background:#5eead415;border:1px solid #5eead440;color:var(--teal);border-radius:10px;margin-bottom:14px;font-size:12px;font-weight:600}
+.products-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.product{background:var(--card);border:1px solid #ffffff10;border-radius:14px;overflow:hidden}
+.product .img-wrap{position:relative;aspect-ratio:1.3;overflow:hidden;background:#050810}
+.product img{width:100%;height:100%;object-fit:cover}
+.product .badge{position:absolute;top:8px;left:8px;background:linear-gradient(135deg,#5eead4,#22d3ee);color:#050810;padding:3px 8px;border-radius:6px;font-size:9px;font-weight:900;text-transform:uppercase}
+.product-body{padding:12px}
+.product-title{font-size:12px;font-weight:800;color:#fff;margin-bottom:4px;line-height:1.3}
+.product-desc{color:var(--muted);font-size:10px;margin-bottom:8px;line-height:1.3}
+.product-price{color:var(--teal);font-weight:900;font-size:14px;margin-bottom:8px}
+.buy{width:100%;border:0;padding:9px;border-radius:8px;background:linear-gradient(135deg,#5eead4,#22d3ee);color:#050810;font-weight:900;cursor:pointer;font-family:inherit;font-size:11px;text-transform:uppercase}
+.order-card{background:var(--card);border:1px solid #ffffff10;border-radius:12px;padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.order-card .o-name{color:#fff;font-weight:700;font-size:12px;margin-bottom:4px}
+.order-card .o-time{color:var(--muted);font-size:10px}
+.order-card .o-price{color:var(--teal);font-weight:900;font-size:13px}
+.social-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.social-card{background:var(--card);border:1px solid #ffffff10;border-radius:16px;padding:22px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;text-decoration:none}
+.social-card.discord:hover{border-color:#5865F280}
+.social-card.zalo:hover{border-color:#0068FF80}
+.social-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center}
+.social-card.discord .social-icon{background:linear-gradient(135deg,#5865F2,#4752C4)}
+.social-card.zalo .social-icon{background:linear-gradient(135deg,#0068FF,#0047B3)}
+.social-icon svg{width:30px;height:30px;fill:#fff}
+.social-name{font-size:13px;font-weight:900;color:#fff;text-transform:uppercase}
+.social-sub{font-size:10px;color:var(--muted)}
+@media(max-width:380px){.quick{gap:5px}.quick button{font-size:12px;padding:12px 2px}.products-grid{grid-template-columns:1fr}.social-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo"><i>🎮</i>SAMM SHOP</div>
+<div class="chip" onclick="chipClick()">
+<div><div class="name" id="cName">Đăng nhập</div><div class="bal" id="cBal">0 VND</div></div>
+<div class="av" id="cAv">?</div>
+</div>
+</header>
+
+<main>
+<div class="page on" id="p-shop">
+<div class="title">Shop</div>
+<div class="products-grid" id="products"></div>
+</div>
+
+<div class="page" id="p-nap">
+<div id="notice" class="notice-box" style="display:none"></div>
+<div id="form">
+<div class="title">Nạp tiền</div>
+<div class="card">
+<label>Số tiền cần nạp (VND)</label>
+<div class="amt">
+<input id="amt" inputmode="numeric" value="50.000">
+<span>₫</span>
+</div>
+<div class="quick">
+<button data-a="50000" class="on">50k</button>
+<button data-a="100000">100k</button>
+<button data-a="200000">200k</button>
+<button data-a="500000">500k</button>
+</div>
+<button class="create" onclick="createDeposit()">Tạo yêu cầu nạp</button>
+</div>
+</div>
+<div id="qr" style="display:none">
+<div class="title">Nạp tiền</div>
+<div class="qr">
+<img src="https://files.catbox.moe/7e2kkm.png" alt="QR">
+<div class="timer" id="timer">10:00</div>
+<div class="timer-lb">Phiên chờ xác nhận</div>
+<button class="cancel" onclick="cancelDeposit(true)">Hủy yêu cầu nạp</button>
+<div class="info"><b>Số tiền: <span id="qrAmt"></span></b><br>Quét QR để chuyển khoản.</div>
+</div>
+</div>
+<div class="warn" id="warn">
+<h3>Lưu ý quan trọng</h3>
+<ul>
+<li>Số dư chỉ được cộng sau khi xác nhận.</li>
+<li>Không tạo nhiều yêu cầu cùng lúc.</li>
+<li>Liên hệ hỗ trợ nếu chưa được cộng.</li>
+</ul>
+</div>
+</div>
+
+<div class="page" id="p-don">
+<div class="title">Đơn hàng</div>
+<div id="orders"></div>
+</div>
+
+<div class="page" id="p-box">
+<div class="title">Box</div>
+<div class="card" style="text-align:center;margin-bottom:14px">
+<h3 style="color:#fff;font-size:14px;margin-bottom:6px">Tham gia cộng đồng</h3>
+<p style="color:var(--muted);font-size:12px">Nhấn Discord hoặc Zalo để tham gia</p>
+</div>
+<div class="social-grid">
+<a href="https://discord.gg/AMVw7aF35" target="_blank" rel="noopener" class="social-card discord">
+<div class="social-icon"><svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg></div>
+<div class="social-name">Discord</div>
+<div class="social-sub">Group chat</div>
+</a>
+<a href="https://zalo.me/g/wqnmgz1abybxpub2p9w9" target="_blank" rel="noopener" class="social-card zalo">
+<div class="social-icon"><svg viewBox="0 0 24 24"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/></svg></div>
+<div class="social-name">Zalo</div>
+<div class="social-sub">Hỗ trợ 24/7</div>
+</a>
+</div>
+</div>
+
+<div class="page" id="p-acc">
+<div class="title">Tài khoản</div>
+<div id="guestView">
+<div class="empty">Vui lòng đăng nhập.</div>
+<button class="create" onclick="openAuth()">Đăng nhập / Đăng ký</button>
+</div>
+<div id="profileView" style="display:none">
+<div class="card">
+<div class="profile-head">
+<div class="big-av" id="pAv">?</div>
+<div class="email" id="pEmail"></div>
+<div class="joined" id="pJoined"></div>
+</div>
+<div class="stat-row">
+<div class="stat"><div class="lb">Số dư</div><div class="vl" id="pBal">0 ₫</div></div>
+<div class="stat"><div class="lb">Đơn hàng</div><div class="vl" id="pOrderCount">0</div></div>
+</div>
+<div class="menu-item" onclick="toggleDepHistory()"><span><span class="ico">💰</span>Lịch sử nạp</span><span class="arw" id="depArrow">▼</span></div>
+<div id="depHistory" style="display:none;margin-bottom:8px"></div>
+<div class="menu-item" onclick="openChangePass()"><span><span class="ico">🔒</span>Đổi mật khẩu</span><span class="arw">›</span></div>
+<div class="menu-item" onclick="doLogout()" style="color:#ef4444"><span><span class="ico">🚪</span>Đăng xuất</span><span class="arw">›</span></div>
+</div>
+</div>
+</div>
+</main>
+
+<nav>
+<button data-p="shop" class="on" onclick="go('shop')"><svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>SHOP</button>
+<button data-p="nap" onclick="go('nap')"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>NẠP</button>
+<button data-p="don" onclick="go('don')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>ĐƠN</button>
+<button data-p="box" onclick="go('box')"><svg viewBox="0 0 24 24"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>BOX</button>
+<button data-p="acc" onclick="go('acc')"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>TÀI KHOẢN</button>
+</nav>
+
+<div class="modal" id="authModal">
+<div class="mbox">
+<h2 id="aTitle">Đăng nhập</h2>
+<input id="aEmail" type="email" placeholder="Email">
+<input id="aPass" type="password" placeholder="Mật khẩu">
+<div class="btns">
+<button class="bt" id="aSubmit" onclick="submitAuth()">Đăng nhập</button>
+<button class="bd" onclick="switchAuth()">Đổi</button>
+<button class="bd" onclick="closeAuth()">Đóng</button>
+</div>
+</div>
+</div>
+
+<div class="modal" id="passModal">
+<div class="mbox">
+<h2>Đổi mật khẩu</h2>
+<input id="oldPass" type="password" placeholder="Mật khẩu hiện tại">
+<input id="newPass" type="password" placeholder="Mật khẩu mới">
+<input id="newPass2" type="password" placeholder="Nhập lại">
+<div class="btns">
+<button class="bt" onclick="submitChangePass()">Xác nhận</button>
+<button class="bd" onclick="closeChangePass()">Đóng</button>
+</div>
+</div>
+</div>
+
+<script>
+var users = {};
+var products = [];
+var notices = [];
+var cur = "";
+var deposit = null;
+var timerId = null;
+var authMode = "login";
+var channel = null;
+
+try { users = JSON.parse(localStorage.getItem("sammUsers") || "{}"); } catch(e) { users = {}; }
+try { products = JSON.parse(localStorage.getItem("sammProducts") || "[]"); } catch(e) { products = []; }
+try { notices = JSON.parse(localStorage.getItem("sammNotices") || "[]"); } catch(e) { notices = []; }
+cur = localStorage.getItem("sammCurrent") || "";
+
+try { channel = new BroadcastChannel("samm_sync_channel"); } catch(e) { channel = null; }
+
+function $(id) { return document.getElementById(id); }
+
+function money(v) {
+    var n = Number(v || 0);
+    return n.toLocaleString("vi-VN") + " d";
+}
+
+function esc(v) {
+    var s = String(v == null ? "" : v);
+    return s.replace(/[&<>"']/g, function(c) {
+        if (c === "&") return "&amp;";
+        if (c === "<") return "&lt;";
+        if (c === ">") return "&gt;";
+        if (c === '"') return "&quot;";
+        if (c === "'") return "&#39;";
+        return c;
+    });
+}
+
+function user() {
+    if (!cur) return null;
+    if (!users[cur]) return null;
+    return users[cur];
+}
+
+function saveUsers() {
+    localStorage.setItem("sammUsers", JSON.stringify(users));
+}
+
+function go(name) {
+    var pages = document.querySelectorAll(".page");
+    for (var i = 0; i < pages.length; i++) {
+        pages[i].classList.remove("on");
+    }
+    var btns = document.querySelectorAll("nav button");
+    for (var j = 0; j < btns.length; j++) {
+        btns[j].classList.remove("on");
+    }
+    var page = $("p-" + name);
+    if (page) page.classList.add("on");
+    var btn = document.querySelector("nav button[data-p='" + name + "']");
+    if (btn) btn.classList.add("on");
+    window.scrollTo(0, 0);
+}
+
+function chipClick() {
+    if (user()) go("acc");
+    else openAuth();
+}
+
+function openAuth() {
+    $("authModal").classList.add("on");
+    $("aEmail").value = "";
+    $("aPass").value = "";
+}
+
+function closeAuth() {
+    $("authModal").classList.remove("on");
+}
+
+function switchAuth() {
+    if (authMode === "login") {
+        authMode = "register";
+        $("aTitle").textContent = "Đăng ký";
+        $("aSubmit").textContent = "Đăng ký";
+    } else {
+        authMode = "login";
+        $("aTitle").textContent = "Đăng nhập";
+        $("aSubmit").textContent = "Đăng nhập";
+    }
+}
+
+function submitAuth() {
+    var email = $("aEmail").value.trim().toLowerCase();
+    var pass = $("aPass").value;
+    var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!re.test(email)) { alert("Email khong hop le"); return; }
+    if (pass.length < 6) { alert("Mat khau >= 6 ky tu"); return; }
+    if (authMode === "register") {
+        if (users[email]) { alert("Email da ton tai"); return; }
+        users[email] = {
+            email: email,
+            password: pass,
+            balance: 0,
+            orders: [],
+            deposits: [],
+            createdAt: Date.now()
+        };
+        saveUsers();
+    } else {
+        if (!users[email]) { alert("Tai khoan chua ton tai"); return; }
+        if (users[email].password !== pass) { alert("Sai mat khau"); return; }
+    }
+    cur = email;
+    localStorage.setItem("sammCurrent", email);
+    closeAuth();
+    renderAll();
+    go("shop");
+    if (authMode === "register") alert("Dang ky thanh cong!");
+    else alert("Dang nhap thanh cong!");
+}
+
+function doLogout() {
+    if (!confirm("Dang xuat?")) return;
+    cur = "";
+    localStorage.removeItem("sammCurrent");
+    renderAll();
+    go("shop");
+}
+
+function openChangePass() {
+    $("passModal").classList.add("on");
+    $("oldPass").value = "";
+    $("newPass").value = "";
+    $("newPass2").value = "";
+}
+
+function closeChangePass() {
+    $("passModal").classList.remove("on");
+}
+
+function submitChangePass() {
+    var u = user();
+    if (!u) return;
+    var o = $("oldPass").value;
+    var n = $("newPass").value;
+    var n2 = $("newPass2").value;
+    if (o !== u.password) { alert("Mat khau hien tai sai"); return; }
+    if (n.length < 6) { alert("Mat khau moi >= 6"); return; }
+    if (n !== n2) { alert("Nhap lai khong khop"); return; }
+    users[cur].password = n;
+    saveUsers();
+    closeChangePass();
+    alert("Doi mat khau thanh cong!");
+}
+
+function toggleDepHistory() {
+    var el = $("depHistory");
+    var arw = $("depArrow");
+    if (el.style.display === "none") {
+        var u = user();
+        var list = (u && u.deposits) ? u.deposits : [];
+        if (!list.length) {
+            el.innerHTML = '<div class="empty" style="padding:16px">Chua co lich su</div>';
+        } else {
+            var html = "";
+            for (var i = 0; i < list.length; i++) {
+                var d = list[i];
+                var cls = "wait";
+                if (d.status === "Đã duyệt") cls = "done";
+                else if (d.status === "Đã hủy") cls = "cancel";
+                html += '<div class="dep-item"><div><b style="color:#fff">' + money(d.amount) + '</b><br><span style="color:var(--muted);font-size:10px">' + new Date(d.time).toLocaleString("vi-VN") + '</span></div><span class="st ' + cls + '">' + esc(d.status) + '</span></div>';
+            }
+            el.innerHTML = html;
+        }
+        el.style.display = "block";
+        arw.textContent = "▲";
+    } else {
+        el.style.display = "none";
+        arw.textContent = "▼";
+    }
+}
+
+var amtInput = $("amt");
+amtInput.oninput = function(e) {
+    var v = e.target.value.replace(/\D/g, "");
+    e.target.value = v ? Number(v).toLocaleString("vi-VN") : "";
+};
+
+var qbs = document.querySelectorAll(".quick button");
+for (var qi = 0; qi < qbs.length; qi++) {
+    qbs[qi].onclick = function() {
+        for (var j = 0; j < qbs.length; j++) qbs[j].classList.remove("on");
+        this.classList.add("on");
+        amtInput.value = Number(this.dataset.a).toLocaleString("vi-VN");
+    };
+}
+
+function createDeposit() {
+    if (!user()) { openAuth(); return; }
+    if (deposit) { alert("Dang co phien nap!"); return; }
+    var amt = Number(amtInput.value.replace(/\D/g, ""));
+    if (amt < 10000) { alert("Toi thieu 10.000 d"); return; }
+    if (amt > 50000000) { alert("Toi da 50.000.000 d"); return; }
+    deposit = { amount: amt, expiresAt: Date.now() + 600000 };
+    users[cur].deposits = users[cur].deposits || [];
+    users[cur].deposits.unshift({
+        amount: amt,
+        status: "Chờ xác nhận",
+        time: Date.now()
+    });
+    saveUsers();
+    if (channel) channel.postMessage({ key: "sammUsers", value: users });
+    $("qrAmt").textContent = money(amt);
+    $("form").style.display = "none";
+    $("warn").style.display = "none";
+    $("qr").style.display = "block";
+    startTimer();
+}
+
+function startTimer() {
+    clearInterval(timerId);
+    $("timer").style.color = "#fff";
+    tick();
+    timerId = setInterval(tick, 1000);
+}
+
+function tick() {
+    if (!deposit) return;
+    var r = Math.max(0, deposit.expiresAt - Date.now());
+    var m = Math.floor(r / 60000);
+    var s = Math.floor((r % 60000) / 1000);
+    $("timer").textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+    if (r <= 0) {
+        clearInterval(timerId);
+        $("timer").style.color = "#ef4444";
+        cancelDeposit(false);
+    }
+}
+
+function cancelDeposit(ask) {
+    if (ask && !confirm("Huy yeu cau nap?")) return;
+    clearInterval(timerId);
+    timerId = null;
+    deposit = null;
+    $("qr").style.display = "none";
+    $("form").style.display = "block";
+    $("warn").style.display = "block";
+    $("timer").style.color = "#fff";
+    $("timer").textContent = "10:00";
+}
+
+function buy(id) {
+    if (!user()) { openAuth(); return; }
+    var p = null;
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].id === id) {
+            p = products[i];
+            break;
+        }
+    }
+    if (!p) return;
+    var price = Number(p.price || 0);
+    if (Number(user().balance || 0) < price) {
+        alert("So du khong du");
+        go("nap");
+        return;
+    }
+    var msg = 'Mua "' + p.name + '" voi gia ' + money(price) + "?";
+    if (!confirm(msg)) return;
+    users[cur].balance -= price;
+    users[cur].orders.unshift({
+        name: p.name,
+        price: price,
+        time: Date.now()
+    });
+    saveUsers();
+    if (channel) channel.postMessage({ key: "sammUsers", value: users });
+    renderAll();
+    alert("Mua thanh cong!");
+    if (p.url) window.open(p.url, "_blank");
+}
+
+function renderProducts() {
+    try { products = JSON.parse(localStorage.getItem("sammProducts") || "[]"); } catch(e) { products = []; }
+    var box = $("products");
+    if (!box) return;
+    if (!products.length) {
+        box.innerHTML = '<div class="empty" style="grid-column:1/-1">Chua co san pham</div>';
+        return;
+    }
+    var html = "";
+    for (var i = 0; i < products.length; i++) {
+        var p = products[i];
+        var img = p.image ? esc(p.image) : "https://placehold.co/400x300/0f141b/5eead4?text=SAMM";
+        html += '<div class="product">';
+        html += '<div class="img-wrap">';
+        html += '<img src="' + img + '" onerror="this.src=\'https://placehold.co/400x300?text=SAMM\'">';
+        html += '<div class="badge">HOT</div>';
+        html += '</div>';
+        html += '<div class="product-body">';
+        html += '<div class="product-title">' + esc(p.name) + '</div>';
+        html += '<div class="product-desc">' + esc(p.desc || "") + '</div>';
+        html += '<div class="product-price">' + money(p.price) + '</div>';
+        html += '<button class="buy" onclick="buy(' + p.id + ')">Mua ngay</button>';
+        html += '</div></div>';
+    }
+    box.innerHTML = html;
+}
+
+function renderNotice() {
+    try { notices = JSON.parse(localStorage.getItem("sammNotices") || "[]"); } catch(e) { notices = []; }
+    var n = $("notice");
+    if (!n) return;
+    if (notices.length) {
+        n.innerHTML = "TB: " + esc(notices[0].text);
+        n.style.display = "block";
+    } else {
+        n.style.display = "none";
+    }
+}
+
+function renderOrders() {
+    var u = user();
+    var ob = $("orders");
+    if (!ob) return;
+    if (!u || !u.orders || !u.orders.length) {
+        ob.innerHTML = '<div class="empty">Chua co don hang</div>';
+        return;
+    }
+    var html = "";
+    for (var i = 0; i < u.orders.length; i++) {
+        var o = u.orders[i];
+        html += '<div class="order-card">';
+        html += '<div>';
+        html += '<div class="o-name">' + esc(o.name) + '</div>';
+        html += '<div class="o-time">' + new Date(o.time).toLocaleString("vi-VN") + '</div>';
+        html += '</div>';
+        html += '<div class="o-price">' + money(o.price) + '</div>';
+        html += '</div>';
+    }
+    ob.innerHTML = html;
+}
+
+function renderProfile() {
+    var u = user();
+    if (!u) {
+        $("cName").textContent = "Đăng nhập";
+        $("cBal").textContent = "0 VND";
+        $("cAv").textContent = "?";
+        $("guestView").style.display = "block";
+        $("profileView").style.display = "none";
+        return;
+    }
+    var shortName = u.email.split("@")[0];
+    $("cName").textContent = shortName;
+    $("cBal").textContent = Number(u.balance || 0).toLocaleString("vi-VN") + " VND";
+    $("cAv").textContent = u.email[0].toUpperCase();
+    $("guestView").style.display = "none";
+    $("profileView").style.display = "block";
+    $("pAv").textContent = u.email[0].toUpperCase();
+    $("pEmail").textContent = u.email;
+    $("pBal").textContent = money(u.balance);
+    $("pOrderCount").textContent = (u.orders || []).length;
+    if (u.createdAt) {
+        $("pJoined").textContent = "Thanh vien tu " + new Date(u.createdAt).toLocaleDateString("vi-VN");
+    } else {
+        $("pJoined").textContent = "";
+    }
+}
+
+function renderAll() {
+    try { users = JSON.parse(localStorage.getItem("sammUsers") || "{}"); } catch(e) { users = {}; }
+    try { products = JSON.parse(localStorage.getItem("sammProducts") || "[]"); } catch(e) { products = []; }
+    try { notices = JSON.parse(localStorage.getItem("sammNotices") || "[]"); } catch(e) { notices = []; }
+    renderProducts();
+    renderNotice();
+    renderOrders();
+    renderProfile();
+}
+
+if (channel) {
+    channel.onmessage = function(e) {
+        if (!e.data) return;
+        if (e.data.key === "sammProducts") {
+            localStorage.setItem("sammProducts", JSON.stringify(e.data.value));
+            renderProducts();
+        }
+        if (e.data.key === "sammNotices") {
+            localStorage.setItem("sammNotices", JSON.stringify(e.data.value));
+            renderNotice();
+        }
+        if (e.data.key === "sammUsers") {
+            users = e.data.value;
+            localStorage.setItem("sammUsers", JSON.stringify(users));
+            renderAll();
+        }
+    };
+}
+
+window.addEventListener("storage", function(e) {
+    if (e.key === "sammProducts" || e.key === "sammNotices" || e.key === "sammUsers" || e.key === "sammCurrent") {
+        cur = localStorage.getItem("sammCurrent") || "";
+        renderAll();
+    }
+});
+
+go("shop");
+renderAll();
+</script>
+</body>
+</html>

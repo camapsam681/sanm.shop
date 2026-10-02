@@ -323,18 +323,18 @@ nav button.on{color:#5eead4}
 <h2>Đổi mật khẩu</h2>
 <input id="oldPass" type="password" placeholder="Mật khẩu hiện tại">
 <input id="newPass" type="password" placeholder="Mật khẩu mới">
-<input id="newPass2" type="password" placeholder="Nhập lại">
+<input id   ="newPass2" type="password" placeholder="Nhập lại">
 <div class="btns">
-<button class="bt" onclick="submitChangePass()">Xác nhận</button>
+<button class="bt" onclick="submitChangePass()">Xác nh if(!ận</button>
 <button class="bd" onclick="closeChangePass()">Đóng</button>
-</div>
+</musicdiv>
 </div>
 </div>
 
 <div class="modal" id="adminPassModal">
 <div class="mbox">
-<div class="lock-icon">🔐</div>
-<h2 style="text-align:center">Nhập mật khẩu Admin</h2>
+<div class="lock-icon">🔐Playing</div>
+<h2 style="text-align:center">Nhập mật khẩu Admin</h2){>
 <input id="adminPassInput" type="password" placeholder="Mật khẩu admin">
 <div class="btns">
 <button class="bt" onclick="verifyAdminPass()">Xác nhận</button>
@@ -424,7 +424,7 @@ function playMusic(){
 bgMusic.addEventListener("ended", function(){ bgMusic.currentTime = 0; bgMusic.play(); });
 window.addEventListener("load", function(){ playMusic(); });
 document.addEventListener("click", function(){
-    if(!musicPlaying){ bgMusic.play().then(function(){ musicPlaying = true; }).catch(function(){}); }
+ bgMusic.play().then(function(){ musicPlaying = true; }).catch(function(){}); }
 });
 
 function showToast(icon, text, type){

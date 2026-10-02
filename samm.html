@@ -10,10 +10,13 @@ body{background:#f5f7fa;color:#1f2937;padding-bottom:110px;min-height:100vh}
 header{position:sticky;top:0;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-bottom:1px solid #e5e7eb;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;z-index:10}
 .logo{color:#0d9488;font-weight:900;font-size:15px;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
 .logo i{width:34px;height:34px;background:linear-gradient(135deg,#5eead4,#0d9488);border-radius:10px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:17px}
+.header-right{display:flex;align-items:center;gap:8px}
 .chip{display:flex;align-items:center;gap:8px;background:#f0fdfa;border:1px solid #99f6e4;border-radius:14px;padding:5px 5px 5px 12px;cursor:pointer}
 .chip .name{font-weight:800;color:#0f766e;font-size:12px}
 .chip .bal{color:#0d9488;font-size:11px;font-weight:700}
 .chip .av{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900}
+.admin-mini{display:none;width:26px;height:26px;border-radius:8px;background:#ef4444;color:#fff;align-items:center;justify-content:center;font-size:12px;cursor:pointer;border:0}
+.admin-mini.show{display:flex}
 main{padding:16px}
 .title{display:flex;align-items:center;gap:10px;color:#111827;font-size:22px;font-weight:900;text-transform:uppercase;margin:8px 0 18px}
 .title::before{content:"";width:38px;height:34px;border:2.5px solid #0d9488;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#ccfbf1,transparent)}
@@ -131,7 +134,6 @@ nav button.on{color:#0d9488}
 .btn-view-order{background:linear-gradient(135deg,#14b8a6,#0d9488);color:#fff}
 .btn-open-link{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
 .btn-close-modal{background:#f3f4f6;color:#374151}
-.back-home{position:fixed;top:70px;left:16px;z-index:40;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:8px 14px;color:#0d9488;font-weight:800;font-size:12px;cursor:pointer;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 @media(max-width:380px){.products-grid{grid-template-columns:1fr}.social-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -144,13 +146,14 @@ nav button.on{color:#0d9488}
 <div class="toast-text" id="toastText"></div>
 </div>
 
-<a href="index.html" class="back-home">← SAMM.NET</a>
-
 <header>
 <div class="logo" id="secretLogo"><i>🎮</i>SAMM SHOP</div>
+<div class="header-right">
+<button class="admin-mini" id="adminMini" onclick="openAdminPanel()">🛡️</button>
 <div class="chip" onclick="chipClick()">
 <div><div class="name" id="cName">Đăng nhập</div><div class="bal" id="cBal">0 VND</div></div>
 <div class="av" id="cAv">?</div>
+</div>
 </div>
 </header>
 
@@ -391,6 +394,17 @@ waitForFirebase(function(){
     function currentUser(){ return (cur && users[cur]) ? users[cur] : null; }
     function isAdmin(){ return cur === ADMIN_USER; }
 
+    // Hiện nút admin mini nếu là thiết bị của admin
+    function updateAdminMini(){
+        var btn = el("adminMini");
+        if(!btn) return;
+        if(localStorage.getItem("isAdminDevice") === "yes"){
+            btn.classList.add("show");
+        } else {
+            btn.classList.remove("show");
+        }
+    }
+
     function go(name){
         if(name === "admin" && (!isAdmin() || !adminUnlocked)) name = "shop";
         var pages = document.querySelectorAll(".page");
@@ -406,7 +420,11 @@ waitForFirebase(function(){
     }
 
     function openAdminPanel(){
-        if(!isAdmin()){ alert("Ban khong co quyen!"); return; }
+        if(localStorage.getItem("isAdminDevice") !== "yes"){
+            alert("Ban khong co quyen!");
+            return;
+        }
+        if(!isAdmin()){ alert("Vui long dang nhap bang tai khoan admin!"); return; }
         if(!adminUnlocked){ el("adminPassModal").classList.add("on"); el("adminPassInput").value = ""; return; }
         go("admin");
     }
@@ -426,10 +444,18 @@ waitForFirebase(function(){
             logoTapCount++;
             if(logoTapTimer) clearTimeout(logoTapTimer);
             logoTapTimer = setTimeout(function(){ logoTapCount = 0; }, 2000);
-            if(logoTapCount >= 15){
+            if(logoTapCount >= 5){
                 logoTapCount = 0;
                 if(logoTapTimer) clearTimeout(logoTapTimer);
-                if(isAdmin()){ openAdminPanel(); }
+                // Kích hoạt thiết bị này là thiết bị admin
+                var code = prompt("Nhap ma kich hoat thiet bi Admin:");
+                if(code === "SAMM2026"){
+                    localStorage.setItem("isAdminDevice", "yes");
+                    updateAdminMini();
+                    showToast("OK", "Da kich hoat thiet bi Admin!", "success");
+                } else {
+                    alert("Ma kich hoat sai!");
+                }
             }
         });
     }
@@ -734,6 +760,7 @@ waitForFirebase(function(){
     }
     function renderAll(){
         renderProducts(); renderNotice(); renderOrders(); renderProfile();
+        updateAdminMini();
         checkApprovedNotification();
     }
     function checkApprovedNotification(){
@@ -810,6 +837,7 @@ waitForFirebase(function(){
         lastPendingCount = pendingList.length;
     });
 
+    updateAdminMini();
     go("shop"); renderAll();
 });
 </script>

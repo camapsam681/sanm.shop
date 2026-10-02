@@ -5,135 +5,146 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SAMM SHOP</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent}
-body{background:#050810;color:#e5e7eb;padding-bottom:110px;min-height:100vh}
-header{position:sticky;top:0;background:rgba(5,8,16,.95);backdrop-filter:blur(20px);border-bottom:1px solid #ffffff10;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;z-index:10}
-.logo{color:#5eead4;font-weight:900;font-size:15px;display:flex;align-items:center;gap:8px}
-.logo i{width:32px;height:32px;background:linear-gradient(135deg,#5eead4,#0d9488);border-radius:9px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:16px}
-.chip{display:flex;align-items:center;gap:8px;background:#111827;border:1px solid #ffffff10;border-radius:12px;padding:5px 5px 5px 12px;cursor:pointer}
-.chip .name{font-weight:800;color:#fff;font-size:12px}
-.chip .bal{color:#5eead4;font-size:11px;font-weight:700}
-.chip .av{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000;display:flex;align-items:center;justify-content:center;font-weight:900}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:#f5f7fa;color:#1f2937;padding-bottom:110px;min-height:100vh}
+header{position:sticky;top:0;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid #e5e7eb;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.logo{color:#0d9488;font-weight:900;font-size:15px;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.logo i{width:34px;height:34px;background:linear-gradient(135deg,#5eead4,#0d9488);border-radius:10px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:17px;box-shadow:0 4px 12px rgba(13,148,136,.3)}
+.chip{display:flex;align-items:center;gap:8px;background:#f0fdfa;border:1px solid #99f6e4;border-radius:14px;padding:5px 5px 5px 12px;cursor:pointer;transition:all .2s}
+.chip:active{transform:scale(.96)}
+.chip .name{font-weight:800;color:#0f766e;font-size:12px}
+.chip .bal{color:#0d9488;font-size:11px;font-weight:700}
+.chip .av{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;box-shadow:0 2px 8px rgba(251,191,36,.4)}
 main{padding:16px}
-.title{display:flex;align-items:center;gap:10px;color:#fff;font-size:22px;font-weight:900;text-transform:uppercase;margin:8px 0 18px}
-.title::before{content:"";width:36px;height:32px;border:2.5px solid #5eead4;border-radius:9px;flex-shrink:0}
-.card{background:#0f141b;border:1px solid #ffffff10;border-radius:16px;padding:18px;margin-bottom:14px}
-label{color:#5eead4;font-size:11px;font-weight:800;text-transform:uppercase;display:block;margin-bottom:8px}
-input,textarea{width:100%;padding:13px;background:#050810;border:1.5px solid #ffffff10;border-radius:10px;color:#fff;outline:none;font-family:inherit;font-size:14px;margin-bottom:10px}
-input:focus,textarea:focus{border-color:#5eead4}
+.title{display:flex;align-items:center;gap:10px;color:#111827;font-size:22px;font-weight:900;text-transform:uppercase;margin:8px 0 18px;letter-spacing:1px}
+.title::before{content:"";width:38px;height:34px;border:2.5px solid #0d9488;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#ccfbf1,transparent)}
+.card{background:#ffffff;border:1px solid #e5e7eb;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,0,0,.04)}
+label{color:#0d9488;font-size:11px;font-weight:800;text-transform:uppercase;display:block;margin-bottom:8px;letter-spacing:1px}
+input,textarea{width:100%;padding:14px;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px;color:#111827;outline:none;font-family:inherit;font-size:14px;margin-bottom:10px;transition:all .2s}
+input:focus,textarea:focus{border-color:#0d9488;background:#fff;box-shadow:0 0 0 3px rgba(13,148,136,.15)}
 textarea{resize:vertical;min-height:60px}
 .amt{position:relative;margin-bottom:14px}
-.amt input{padding:18px 45px 18px 16px;font-size:22px;font-weight:800;margin:0}
-.amt span{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:#5eead4;font-size:20px;font-weight:900}
+.amt input{padding:20px 50px 20px 18px;font-size:24px;font-weight:800;margin:0;letter-spacing:1px;color:#0d9488}
+.amt span{position:absolute;right:18px;top:50%;transform:translateY(-50%);color:#0d9488;font-size:22px;font-weight:900}
 .quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
-.quick button{padding:14px 2px;background:#050810;border:1.5px solid #ffffff10;border-radius:10px;color:#9ca3af;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
-.quick button.on{border-color:#5eead4;color:#5eead4;background:#5eead420}
-.create{width:100%;padding:16px;background:linear-gradient(135deg,#5eead4,#22d3ee);border:0;border-radius:12px;color:#050810;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;text-transform:uppercase}
-.create.red{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff}
-.warn{margin-top:16px;padding:16px;background:#0f141b;border:1px solid #ffffff10;border-left:3px solid #5eead4;border-radius:12px}
-.warn h3{color:#5eead4;font-size:12px;font-weight:900;text-transform:uppercase;margin-bottom:12px}
-.warn li{color:#9ca3af;font-size:12px;line-height:1.6;padding-left:14px;position:relative;margin-bottom:8px;list-style:none}
-.warn li::before{content:"";position:absolute;left:0;top:7px;width:5px;height:5px;background:#5eead4;border-radius:50%}
-.qr{background:#0f141b;border:1px solid #ffffff10;border-radius:16px;padding:20px;text-align:center}
-.qr img{background:#fff;padding:16px;border-radius:12px;width:100%;max-width:240px;border:2px solid #5eead4;margin-bottom:16px}
-.timer{font-size:40px;font-weight:900;letter-spacing:3px;color:#fff;margin:8px 0}
+.quick button{padding:14px 2px;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px;color:#6b7280;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .2s}
+.quick button.on{border-color:#0d9488;color:#0d9488;background:#f0fdfa;box-shadow:0 0 20px rgba(13,148,136,.2)}
+.create{width:100%;padding:16px;background:linear-gradient(135deg,#14b8a6,#0d9488);border:0;border-radius:14px;color:#fff;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:1px;transition:all .2s;box-shadow:0 8px 24px rgba(13,148,136,.3)}
+.create:active{transform:scale(.97)}
+.create.red{background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 8px 24px rgba(239,68,68,.3)}
+.warn{margin-top:16px;padding:16px;background:#fffbeb;border:1px solid #fde68a;border-left:3px solid #f59e0b;border-radius:14px}
+.warn h3{color:#b45309;font-size:12px;font-weight:900;text-transform:uppercase;margin-bottom:12px;letter-spacing:1px}
+.warn li{color:#78716c;font-size:12px;line-height:1.6;padding-left:14px;position:relative;margin-bottom:8px;list-style:none}
+.warn li::before{content:"";position:absolute;left:0;top:7px;width:5px;height:5px;background:#f59e0b;border-radius:50%}
+.qr{background:#ffffff;border:1px solid #e5e7eb;border-radius:18px;padding:22px;text-align:center;box-shadow:0 8px 32px rgba(13,148,136,.08)}
+.qr img{background:#fff;padding:16px;border-radius:14px;width:100%;max-width:240px;border:2px solid #0d9488;margin-bottom:16px;box-shadow:0 0 32px rgba(13,148,136,.2)}
+.timer{font-size:44px;font-weight:900;letter-spacing:4px;color:#0d9488;margin:8px 0}
 .timer-lb{color:#6b7280;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
-.cancel{width:100%;padding:14px;background:#ef444420;border:1.5px solid #ef444450;border-radius:10px;color:#ef4444;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
-.info{color:#9ca3af;font-size:11px;line-height:1.6;margin-top:14px;padding:12px;background:#050810;border-radius:10px}
-.info b{color:#5eead4}
-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(5,8,16,.98);backdrop-filter:blur(20px);border-top:1px solid #ffffff10;display:grid;grid-template-columns:repeat(5,1fr);z-index:100;padding:6px 0}
-nav button{background:none;border:0;color:#4b5563;font-size:9px;font-weight:800;padding:6px 2px;cursor:pointer;font-family:inherit;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:3px}
+.cancel{width:100%;padding:14px;background:#fef2f2;border:1.5px solid #fecaca;border-radius:12px;color:#dc2626;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .2s}
+.cancel:active{transform:scale(.97)}
+.info{color:#6b7280;font-size:11px;line-height:1.6;margin-top:14px;padding:12px;background:#f9fafb;border-radius:12px}
+.info b{color:#0d9488}
+nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.98);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid #e5e7eb;display:grid;grid-template-columns:repeat(5,1fr);z-index:100;padding:6px 0;box-shadow:0 -4px 20px rgba(0,0,0,.06)}
+nav button{background:none;border:0;color:#9ca3af;font-size:9px;font-weight:800;padding:6px 2px;cursor:pointer;font-family:inherit;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:3px;transition:all .2s;letter-spacing:.5px}
 nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2}
-nav button.on{color:#5eead4}
+nav button.on{color:#0d9488}
 .page{display:none}
-.page.on{display:block}
+.page.on{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 #p-acc{position:relative;padding-bottom:20px}
-.empty{padding:50px 20px;text-align:center;color:#6b7280;font-size:13px}
-.modal{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;padding:18px;z-index:500}
-.modal.on{display:flex}
-.mbox{background:#0f141b;border:1px solid #5eead430;border-radius:18px;padding:22px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto}
-.mbox h2{color:#5eead4;font-size:17px;text-transform:uppercase;margin-bottom:16px}
-.mbox input{background:#050810;border:1.5px solid #ffffff10;border-radius:10px}
+.empty{padding:50px 20px;text-align:center;color:#9ca3af;font-size:13px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:18px;z-index:500}
+.modal.on{display:flex;animation:fadeIn .2s ease}
+.mbox{background:#ffffff;border:1px solid #e5e7eb;border-radius:20px;padding:24px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.mbox h2{color:#0d9488;font-size:17px;text-transform:uppercase;margin-bottom:16px;letter-spacing:1px}
+.mbox input{background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px}
 .btns{display:flex;gap:8px;margin-top:6px}
-.btns button{flex:1;padding:12px;border:0;border-radius:10px;font-weight:800;cursor:pointer;font-family:inherit;font-size:12px;text-transform:uppercase}
-.bt{background:linear-gradient(135deg,#5eead4,#22d3ee);color:#050810}
-.bd{background:#1f2937;color:#fff}
-.profile-head{text-align:center;padding:22px 0 18px;border-bottom:1px solid #ffffff10;margin-bottom:18px}
-.big-av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000;font-size:30px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
-.profile-head .email{color:#5eead4;font-size:13px;font-weight:700;margin-bottom:4px}
-.profile-head .joined{color:#6b7280;font-size:10px}
+.btns button{flex:1;padding:12px;border:0;border-radius:12px;font-weight:800;cursor:pointer;font-family:inherit;font-size:12px;text-transform:uppercase;transition:all .2s}
+.btns button:active{transform:scale(.96)}
+.bt{background:linear-gradient(135deg,#14b8a6,#0d9488);color:#fff;box-shadow:0 4px 12px rgba(13,148,136,.3)}
+.bd{background:#f3f4f6;color:#374151}
+.profile-head{text-align:center;padding:22px 0 18px;border-bottom:1px solid #e5e7eb;margin-bottom:18px}
+.big-av{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;font-size:32px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 8px 24px rgba(251,191,36,.4)}
+.profile-head .email{color:#0d9488;font-size:13px;font-weight:700;margin-bottom:4px}
+.profile-head .joined{color:#9ca3af;font-size:10px}
 .stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.stat{background:#0f141b;border:1px solid #ffffff10;border-radius:12px;padding:14px;text-align:center}
-.stat .lb{color:#6b7280;font-size:10px;text-transform:uppercase;margin-bottom:6px;font-weight:800}
-.stat .vl{color:#5eead4;font-size:18px;font-weight:900}
-.menu-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#0f141b;border:1px solid #ffffff10;border-radius:12px;margin-bottom:8px;cursor:pointer;font-size:13px;font-weight:600;position:relative;z-index:1}
+.stat{background:#f9fafb;border:1px solid #e5e7eb;border-radius:14px;padding:16px;text-align:center}
+.stat .lb{color:#6b7280;font-size:10px;text-transform:uppercase;margin-bottom:6px;font-weight:800;letter-spacing:1px}
+.stat .vl{color:#0d9488;font-size:20px;font-weight:900}
+.menu-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:14px;margin-bottom:8px;cursor:pointer;font-size:13px;font-weight:600;position:relative;z-index:1;transition:all .2s;color:#374151}
+.menu-item:active{transform:scale(.98);border-color:#0d9488}
 .menu-item .ico{margin-right:10px}
-.menu-item .arw{color:#6b7280}
-.dep-item{background:#050810;border:1px solid #ffffff10;border-radius:10px;padding:12px 14px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;font-size:12px}
-.dep-item .st{font-size:10px;padding:3px 8px;border-radius:5px;font-weight:800;text-transform:uppercase}
-.st.wait{background:#fbbf2420;color:#fbbf24}
-.st.done{background:#22c55e20;color:#22c55e}
-.st.cancel{background:#ef444420;color:#ef4444}
-.notice-box{padding:12px 14px;background:#5eead415;border:1px solid #5eead440;color:#5eead4;border-radius:10px;margin-bottom:14px;font-size:12px;font-weight:600}
+.menu-item .arw{color:#9ca3af}
+.dep-item{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:12px 14px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.dep-item .st{font-size:10px;padding:3px 8px;border-radius:6px;font-weight:800;text-transform:uppercase}
+.st.wait{background:#fef3c7;color:#92400e}
+.st.done{background:#dcfce7;color:#166534}
+.st.cancel{background:#fee2e2;color:#991b1b}
+.notice-box{padding:14px;background:#f0fdfa;border:1px solid #99f6e4;color:#0f766e;border-radius:14px;margin-bottom:14px;font-size:12px;font-weight:600}
 .products-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.product{background:#0f141b;border:1px solid #ffffff10;border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
-.product .img-wrap{position:relative;aspect-ratio:1.3;overflow:hidden;background:#050810}
-.product img{width:100%;height:100%;object-fit:cover;display:block}
-.product .badge{position:absolute;top:8px;left:8px;background:linear-gradient(135deg,#5eead4,#22d3ee);color:#050810;padding:3px 8px;border-radius:6px;font-size:9px;font-weight:900;text-transform:uppercase}
+.product{background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:all .2s;box-shadow:0 4px 16px rgba(0,0,0,.04)}
+.product:active{transform:scale(.98)}
+.product .img-wrap{position:relative;aspect-ratio:1.3;overflow:hidden;background:#f3f4f6}
+.product img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.product:active img{transform:scale(1.05)}
+.product .badge{position:absolute;top:8px;left:8px;background:linear-gradient(135deg,#14b8a6,#0d9488);color:#fff;padding:3px 8px;border-radius:8px;font-size:9px;font-weight:900;text-transform:uppercase;box-shadow:0 4px 12px rgba(13,148,136,.4)}
 .product-body{padding:12px;display:flex;flex-direction:column;flex:1}
-.product-title{font-size:12px;font-weight:800;color:#fff;margin-bottom:4px;line-height:1.3}
+.product-title{font-size:12px;font-weight:800;color:#111827;margin-bottom:4px;line-height:1.3}
 .product-desc{color:#6b7280;font-size:10px;margin-bottom:8px;line-height:1.3;flex:1}
-.product-price{color:#5eead4;font-weight:900;font-size:14px;margin-bottom:8px}
-.buy{width:100%;border:0;padding:14px;border-radius:8px;background:linear-gradient(135deg,#5eead4,#22d3ee);color:#050810;font-weight:900;cursor:pointer;font-family:inherit;font-size:12px;text-transform:uppercase;display:block;position:relative;z-index:5}
-.buy:active{transform:scale(.96)}
-.order-card{background:#0f141b;border:1px solid #ffffff10;border-radius:12px;padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px}
-.order-card .o-name{color:#fff;font-weight:700;font-size:12px;margin-bottom:4px}
-.order-card .o-time{color:#6b7280;font-size:10px}
-.order-card .o-price{color:#5eead4;font-weight:900;font-size:13px;text-align:right}
+.product-price{color:#0d9488;font-weight:900;font-size:14px;margin-bottom:8px}
+.buy{width:100%;border:0;padding:14px;border-radius:10px;background:linear-gradient(135deg,#14b8a6,#0d9488);color:#fff;font-weight:900;cursor:pointer;font-family:inherit;font-size:12px;text-transform:uppercase;display:block;position:relative;z-index:5;box-shadow:0 4px 16px rgba(13,148,136,.3);transition:all .2s}
+.buy:active{transform:scale(.95)}
+.order-card{background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.order-card .o-name{color:#111827;font-weight:700;font-size:12px;margin-bottom:4px}
+.order-card .o-time{color:#9ca3af;font-size:10px}
+.order-card .o-price{color:#0d9488;font-weight:900;font-size:13px;text-align:right}
 .social-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.social-card{background:#0f141b;border:1px solid #ffffff10;border-radius:16px;padding:22px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;text-decoration:none}
-.social-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center}
+.social-card{background:#ffffff;border:1px solid #e5e7eb;border-radius:18px;padding:24px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;text-decoration:none;transition:all .2s;box-shadow:0 4px 16px rgba(0,0,0,.04)}
+.social-card:active{transform:scale(.96);border-color:#0d9488}
+.social-icon{width:60px;height:60px;border-radius:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.15)}
 .social-card.discord .social-icon{background:linear-gradient(135deg,#5865F2,#4752C4)}
 .social-card.zalo .social-icon{background:linear-gradient(135deg,#0068FF,#0047B3)}
-.social-icon svg{width:30px;height:30px;fill:#fff}
-.social-name{font-size:13px;font-weight:900;color:#fff;text-transform:uppercase}
-.social-sub{font-size:10px;color:#6b7280}
-.admin-corner{display:none;position:absolute;top:20px;right:16px;z-index:5}
-.admin-corner.on{display:block}
-.admin-btn{background:linear-gradient(135deg,#5eead4,#22d3ee);border:0;padding:8px 14px;border-radius:10px;color:#050810;font-weight:900;font-size:11px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;text-transform:uppercase}
-.admin-item{display:flex;align-items:center;gap:10px;padding:10px;background:#050810;border:1px solid #ffffff10;border-radius:10px;margin-bottom:6px}
-.admin-item img{width:44px;height:44px;object-fit:cover;border-radius:8px;background:#1f2937}
+.social-icon svg{width:32px;height:32px;fill:#fff}
+.social-name{font-size:13px;font-weight:900;color:#111827;text-transform:uppercase;letter-spacing:1px}
+.social-sub{font-size:10px;color:#9ca3af}
+.admin-item{display:flex;align-items:center;gap:10px;padding:10px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;margin-bottom:6px}
+.admin-item img{width:44px;height:44px;object-fit:cover;border-radius:10px;background:#e5e7eb}
 .admin-item .info{flex:1;min-width:0}
-.admin-item .n{font-weight:700;font-size:12px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.admin-item .p{color:#5eead4;font-size:11px;font-weight:700}
-.admin-item .del{background:#ef4444;color:#fff;border:0;width:28px;height:28px;border-radius:8px;cursor:pointer;font-weight:900}
-.dep-approve{background:#050810;border:1px solid #ffffff10;border-radius:10px;padding:10px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;font-size:12px}
-.dep-approve .amt{color:#5eead4;font-weight:900;font-size:14px}
+.admin-item .n{font-weight:700;font-size:12px;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-item .p{color:#0d9488;font-size:11px;font-weight:700}
+.admin-item .del{background:#ef4444;color:#fff;border:0;width:30px;height:30px;border-radius:10px;cursor:pointer;font-weight:900;transition:all .2s}
+.admin-item .del:active{transform:scale(.9)}
+.dep-approve{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;font-size:12px;gap:8px}
+.dep-approve .amt{color:#0d9488;font-weight:900;font-size:14px}
 .dep-approve .email{color:#6b7280;font-size:10px}
-.dep-approve button{border:0;padding:5px 10px;border-radius:6px;font-weight:800;cursor:pointer;font-size:11px;margin-left:4px}
-.btn-ok{background:#22c55e;color:#052e16}
-.btn-no{background:#ef4444;color:#fff}
-.lock-icon{font-size:48px;text-align:center;margin-bottom:14px}
-.toast{position:fixed;top:20px;left:50%;transform:translate(-50%,-200%);background:linear-gradient(135deg,#5eead4,#22d3ee);color:#050810;padding:16px 22px;border-radius:14px;font-weight:900;font-size:13px;z-index:9999;transition:transform .4s ease;display:flex;align-items:center;gap:12px;max-width:90%;text-align:left;line-height:1.4}
+.dep-approve button{border:0;padding:6px 12px;border-radius:8px;font-weight:800;cursor:pointer;font-size:11px;margin-left:4px;transition:all .2s}
+.dep-approve button:active{transform:scale(.9)}
+.btn-ok{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
+.btn-no{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff}
+.lock-icon{font-size:52px;text-align:center;margin-bottom:14px}
+.toast{position:fixed;top:20px;left:50%;transform:translate(-50%,-200%);background:linear-gradient(135deg,#14b8a6,#0d9488);color:#fff;padding:16px 22px;border-radius:16px;font-weight:900;font-size:13px;z-index:9999;transition:transform .4s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:12px;max-width:90%;text-align:left;line-height:1.4;box-shadow:0 12px 32px rgba(13,148,136,.4)}
 .toast.show{transform:translate(-50%,0)}
-.toast.success{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
-.toast.error{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff}
-.toast .toast-icon{font-size:24px;flex-shrink:0}
+.toast.success{background:linear-gradient(135deg,#22c55e,#16a34a);box-shadow:0 12px 32px rgba(34,197,94,.4)}
+.toast.error{background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 12px 32px rgba(239,68,68,.4)}
+.toast.notify{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000;box-shadow:0 12px 32px rgba(251,191,36,.4)}
+.toast .toast-icon{font-size:26px;flex-shrink:0}
 .toast .toast-text{flex:1}
 .order-success-box{text-align:center;padding:8px 0 16px}
-.order-success-icon{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:40px;color:#fff}
-.order-success-box h2{color:#22c55e;font-size:20px;margin-bottom:6px;text-transform:uppercase}
+.order-success-icon{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:44px;color:#fff;box-shadow:0 12px 32px rgba(34,197,94,.4);animation:pop .4s ease}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
+.order-success-box h2{color:#16a34a;font-size:20px;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
 .order-success-box p{color:#6b7280;font-size:12px}
-.order-detail{background:#050810;border:1px solid #ffffff10;border-radius:12px;padding:14px;margin:16px 0}
-.order-detail-row{display:flex;justify-content:space-between;padding:8px 0;font-size:13px;border-bottom:1px solid #ffffff08}
+.order-detail{background:#f9fafb;border:1px solid #e5e7eb;border-radius:14px;padding:14px;margin:16px 0}
+.order-detail-row{display:flex;justify-content:space-between;padding:8px 0;font-size:13px;border-bottom:1px solid #e5e7eb}
 .order-detail-row:last-child{border-bottom:0}
 .order-detail-row .lbl{color:#6b7280}
-.order-detail-row .val{color:#fff;font-weight:700;text-align:right}
-.order-detail-row .val.price{color:#5eead4;font-size:15px}
-.btn-full{width:100%;padding:14px;border:0;border-radius:12px;font-weight:900;cursor:pointer;font-family:inherit;font-size:13px;text-transform:uppercase;margin-top:8px}
-.btn-view-order{background:linear-gradient(135deg,#5eead4,#22d3ee);color:#050810}
-.btn-open-link{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
-.btn-close-modal{background:#1f2937;color:#fff}
+.order-detail-row .val{color:#111827;font-weight:700;text-align:right}
+.order-detail-row .val.price{color:#0d9488;font-size:16px}
+.btn-full{width:100%;padding:14px;border:0;border-radius:12px;font-weight:900;cursor:pointer;font-family:inherit;font-size:13px;text-transform:uppercase;margin-top:8px;transition:all .2s;letter-spacing:1px}
+.btn-full:active{transform:scale(.97)}
+.btn-view-order{background:linear-gradient(135deg,#14b8a6,#0d9488);color:#fff;box-shadow:0 4px 16px rgba(13,148,136,.3)}
+.btn-open-link{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 4px 16px rgba(34,197,94,.3)}
+.btn-close-modal{background:#f3f4f6;color:#374151}
 @media(max-width:380px){.products-grid{grid-template-columns:1fr}.social-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -142,12 +153,12 @@ nav button.on{color:#5eead4}
 <audio id="bgMusic" src="https://files.catbox.moe/cxjo25.mp3" loop preload="auto"></audio>
 
 <div class="toast" id="toast">
-<div class="toast-icon" id="toastIcon">OK</div>
+<div class="toast-icon" id="toastIcon">✓</div>
 <div class="toast-text" id="toastText"></div>
 </div>
 
 <header>
-<div class="logo"><i>🎮</i>SAMM SHOP</div>
+<div class="logo" id="secretLogo"><i>🎮</i>SAMM SHOP</div>
 <div class="chip" onclick="chipClick()">
 <div><div class="name" id="cName">Đăng nhập</div><div class="bal" id="cBal">0 VND</div></div>
 <div class="av" id="cAv">?</div>
@@ -188,8 +199,8 @@ nav button.on{color:#5eead4}
 <div class="timer-lb">Phiên chờ xác nhận</div>
 <button class="cancel" onclick="cancelDeposit(true)">Hủy yêu cầu nạp</button>
 <div class="info"><b>Số tiền: <span id="qrAmt"></span></b><br>Quét QR để chuyển khoản.</div>
-<div style="margin-top:16px;padding:14px;background:#fbbf2415;border:1.5px solid #fbbf2440;border-radius:12px;color:#fbbf24;font-size:12px;text-align:left">
-<b style="color:#fff;display:block;margin-bottom:4px">⏳ Vui lòng chờ 1-3 phút</b>
+<div style="margin-top:16px;padding:14px;background:#fef3c7;border:1.5px solid #fde68a;border-radius:12px;color:#92400e;font-size:12px;text-align:left">
+<b style="color:#78350f;display:block;margin-bottom:4px">⏳ Vui lòng chờ 1-3 phút</b>
 </div>
 </div>
 </div>
@@ -211,7 +222,7 @@ nav button.on{color:#5eead4}
 <div class="page" id="p-box">
 <div class="title">Box</div>
 <div class="card" style="text-align:center;margin-bottom:14px">
-<h3 style="color:#fff;font-size:14px;margin-bottom:6px">Tham gia cộng đồng</h3>
+<h3 style="color:#111827;font-size:14px;margin-bottom:6px">Tham gia cộng đồng</h3>
 <p style="color:#6b7280;font-size:12px">Nhấn Discord hoặc Zalo để tham gia</p>
 </div>
 <div class="social-grid">
@@ -230,9 +241,6 @@ nav button.on{color:#5eead4}
 
 <div class="page" id="p-acc">
 <div class="title">Tài khoản</div>
-<div class="admin-corner" id="adminCorner">
-<button class="admin-btn" onclick="openAdminPanel()">⚡ ADMIN</button>
-</div>
 <div id="guestView">
 <div class="empty">Vui lòng đăng nhập.</div>
 <button class="create" onclick="openAuth()">Đăng nhập / Đăng ký</button>
@@ -259,7 +267,7 @@ nav button.on{color:#5eead4}
 <div class="page" id="p-admin">
 <div class="title">Admin Panel</div>
 <div class="card">
-<h3 style="color:#5eead4;font-size:13px;text-transform:uppercase;margin-bottom:14px">Thêm sản phẩm</h3>
+<h3 style="color:#0d9488;font-size:13px;text-transform:uppercase;margin-bottom:14px">Thêm sản phẩm</h3>
 <label>Tên sản phẩm</label>
 <input id="pName" placeholder="VD: Acc Free Fire VIP">
 <label>Mô tả</label>
@@ -273,11 +281,11 @@ nav button.on{color:#5eead4}
 <button class="create" onclick="addProduct()">Đẩy lên Shop</button>
 </div>
 <div class="card">
-<h3 style="color:#5eead4;font-size:13px;text-transform:uppercase;margin-bottom:14px">Danh sách sản phẩm</h3>
+<h3 style="color:#0d9488;font-size:13px;text-transform:uppercase;margin-bottom:14px">Danh sách sản phẩm</h3>
 <div id="productList"></div>
 </div>
 <div class="card">
-<h3 style="color:#5eead4;font-size:13px;text-transform:uppercase;margin-bottom:14px">Thông báo</h3>
+<h3 style="color:#0d9488;font-size:13px;text-transform:uppercase;margin-bottom:14px">Thông báo</h3>
 <input id="nText" placeholder="Nội dung...">
 <div class="btns">
 <button class="bt" onclick="setNotice()">Gửi</button>
@@ -285,7 +293,7 @@ nav button.on{color:#5eead4}
 </div>
 </div>
 <div class="card">
-<h3 style="color:#5eead4;font-size:13px;text-transform:uppercase;margin-bottom:14px">Duyệt nạp</h3>
+<h3 style="color:#0d9488;font-size:13px;text-transform:uppercase;margin-bottom:14px">Duyệt nạp</h3>
 <div id="depositList"></div>
 </div>
 <div class="card">
@@ -356,7 +364,7 @@ nav button.on{color:#5eead4}
 <div class="order-detail-row"><span class="lbl">Thời gian</span><span class="val" id="odTime">-</span></div>
 <div class="order-detail-row"><span class="lbl">Mã đơn</span><span class="val" id="odCode">-</span></div>
 </div>
-<button class="btn-full btn-open-link" id="odLinkBtn" onclick="openOrder">Link()" style="display:noneMở link giao hàng</button>
+<button class="btn-full btn-open-link" id="odLinkBtn" onclick="openOrderLink()" style="display:none">Mở link giao hàng</button>
 <button class="btn-full btn-view-order" onclick="viewOrderInHistory()">Xem trong Đơn hàng</button>
 <button class="btn-full btn-close-modal" onclick="closeOrderModal()">Đóng</button>
 </div>
@@ -386,8 +394,8 @@ window.addEventListener('load', function(){
     var currentOrderUrl = "";
     var musicPlaying = false;
 
-    function $(id){ return document.getElementById(id); }
-    function money(v){ return Number(v||0).toLocaleString("vi-VN")+" d"; }
+    function el(id){ return document.getElementById(id); }
+    function money(v){ return Number(v||0).toLocaleString("vi-VN")+" đ"; }
     function esc(v){
         var s = String(v == null ? "" : v);
         return s.replace(/[&<>"']/g, function(c){
@@ -416,122 +424,142 @@ window.addEventListener('load', function(){
     function saveProductsToFirebase(){ db.ref('shopData/products').set(products); }
     function saveNoticesToFirebase(){ db.ref('shopData/notices').set(notices); }
 
-    var bgMusic = $("bgMusic");
+    var bgMusic = el("bgMusic");
     function playMusic(){
+        if(!bgMusic) return;
         bgMusic.volume = 0.4;
         bgMusic.play().then(function(){ musicPlaying = true; }).catch(function(){ musicPlaying = false; });
     }
-    bgMusic.addEventListener("ended", function(){ bgMusic.currentTime = 0; bgMusic.play(); });
+    if(bgMusic){
+        bgMusic.addEventListener("ended", function(){ bgMusic.currentTime = 0; bgMusic.play(); });
+    }
     playMusic();
     document.addEventListener("click", function(){
-        if(!musicPlaying){ bgMusic.play().then(function(){ musicPlaying = true; }).catch(function(){}); }
+        if(!musicPlaying && bgMusic){ bgMusic.play().then(function(){ musicPlaying = true; }).catch(function(){}); }
     });
 
     function showToast(icon, text, type){
-        var t = $("toast");
-        $("toastIcon").textContent = icon;
-        $("toastText").innerHTML = text;
+        var t = el("toast");
+        el("toastIcon").textContent = icon;
+        el("toastText").innerHTML = text;
         t.className = "toast";
         if(type === "success") t.classList.add("success");
         else if(type === "error") t.classList.add("error");
+        else if(type === "notify") t.classList.add("notify");
         setTimeout(function(){ t.classList.add("show"); }, 50);
-        setTimeout(function(){ t.classList.remove("show"); }, 4000);
+        setTimeout(function(){ t.classList.remove("show"); }, 5000);
     }
 
-    function user(){ return (cur && users[cur]) ? users[cur] : null; }
+    function currentUser(){ return (cur && users[cur]) ? users[cur] : null; }
     function isAdmin(){ return cur === ADMIN_EMAIL; }
 
-    window.go = function(name){
+    function go(name){
         if(name === "admin" && (!isAdmin() || !adminUnlocked)) name = "shop";
         var pages = document.querySelectorAll(".page");
         for(var i=0;i<pages.length;i++) pages[i].classList.remove("on");
         var btns = document.querySelectorAll("nav button");
         for(var j=0;j<btns.length;j++) btns[j].classList.remove("on");
-        var page = $("p-" + name);
+        var page = el("p-" + name);
         if(page) page.classList.add("on");
         var btn = document.querySelector("nav button[data-p='" + name + "']");
         if(btn) btn.classList.add("on");
         window.scrollTo(0, 0);
         if(name === "admin") renderAdmin();
-    };
+    }
 
-    window.openAdminPanel = function(){
-        if(!isAdmin()){ alert("Ban khong co quyen!"); return; }
+    function openAdminPanel(){
+        if(!isAdmin()){ alert("Bạn không có quyền!"); return; }
         if(!adminUnlocked){ openAdminPass(); return; }
         go("admin");
-    };
-    function openAdminPass(){ $("adminPassModal").classList.add("on"); $("adminPassInput").value = ""; }
-    window.closeAdminPass = function(){ $("adminPassModal").classList.remove("on"); };
-    window.verifyAdminPass = function(){
-        if($("adminPassInput").value === ADMIN_PASSWORD){
+    }
+    function openAdminPass(){ el("adminPassModal").classList.add("on"); el("adminPassInput").value = ""; }
+    function closeAdminPass(){ el("adminPassModal").classList.remove("on"); }
+    function verifyAdminPass(){
+        if(el("adminPassInput").value === ADMIN_PASSWORD){
             adminUnlocked = true;
             closeAdminPass();
-            showToast("OK", "Xac thuc thanh cong!", "success");
+            showToast("✓", "Xác thực thành công!", "success");
             setTimeout(function(){ go("admin"); }, 800);
         } else {
-            alert("Mat khau admin sai!");
-            $("adminPassInput").value = "";
+            alert("Mật khẩu admin sai!");
+            el("adminPassInput").value = "";
         }
-    };
+    }
 
-    window.chipClick = function(){ if(user()) go("acc"); else openAuth(); };
-    window.openAuth = function(){ $("authModal").classList.add("on"); $("aEmail").value = ""; $("aPass").value = ""; };
-    window.closeAuth = function(){ $("authModal").classList.remove("on"); };
-    window.switchAuth = function(){
+    var logoTapCount = 0;
+    var logoTapTimer = null;
+    var secretLogoEl = el("secretLogo");
+    if(secretLogoEl){
+        secretLogoEl.addEventListener("click", function(){
+            logoTapCount++;
+            if(logoTapTimer) clearTimeout(logoTapTimer);
+            logoTapTimer = setTimeout(function(){ logoTapCount = 0; }, 2000);
+            if(logoTapCount >= 15){
+                logoTapCount = 0;
+                if(logoTapTimer) clearTimeout(logoTapTimer);
+                if(isAdmin()){ openAdminPanel(); }
+            }
+        });
+    }
+
+    function chipClick(){ if(currentUser()) go("acc"); else openAuth(); }
+    function openAuth(){ el("authModal").classList.add("on"); el("aEmail").value = ""; el("aPass").value = ""; }
+    function closeAuth(){ el("authModal").classList.remove("on"); }
+    function switchAuth(){
         if(authMode === "login"){
-            authMode = "register"; $("aTitle").textContent = "Dang ky"; $("aSubmit").textContent = "Dang ky";
+            authMode = "register"; el("aTitle").textContent = "Đăng ký"; el("aSubmit").textContent = "Đăng ký";
         } else {
-            authMode = "login"; $("aTitle").textContent = "Dang nhap"; $("aSubmit").textContent = "Dang nhap";
+            authMode = "login"; el("aTitle").textContent = "Đăng nhập"; el("aSubmit").textContent = "Đăng nhập";
         }
-    };
-    window.submitAuth = function(){
-        var email = $("aEmail").value.trim().toLowerCase();
-        var pass = $("aPass").value;
-        if(!email || email.indexOf("@") < 1){ showToast("X", "Email khong hop le!", "error"); return; }
-        if(pass.length < 6){ showToast("X", "Mat khau can it nhat 6 ky tu!", "error"); return; }
+    }
+    function submitAuth(){
+        var email = el("aEmail").value.trim().toLowerCase();
+        var pass = el("aPass").value;
+        if(!email || email.indexOf("@") < 1){ showToast("✕", "Email không hợp lệ!", "error"); return; }
+        if(pass.length < 6){ showToast("✕", "Mật khẩu cần ít nhất 6 ký tự!", "error"); return; }
         loadAllData(function(){
             if(authMode === "register"){
-                if(users[email]){ showToast("X", "Email da ton tai!", "error"); return; }
+                if(users[email]){ showToast("✕", "Email đã tồn tại!", "error"); return; }
                 users[email] = { email: email, password: pass, balance: 0, orders: [], deposits: [], createdAt: Date.now() };
                 saveUsersToFirebase();
                 cur = email;
                 localStorage.setItem("sammCurrent", email);
                 closeAuth(); renderAll(); go("shop");
-                showToast("OK", "Dang ky thanh cong!", "success");
+                showToast("✓", "Đăng ký thành công!", "success");
             } else {
-                if(!users[email]){ showToast("X", "Tai khoan chua ton tai!", "error"); return; }
-                if(users[email].password !== pass){ showToast("X", "Sai mat khau!", "error"); return; }
+                if(!users[email]){ showToast("✕", "Tài khoản chưa tồn tại!", "error"); return; }
+                if(users[email].password !== pass){ showToast("✕", "Sai mật khẩu!", "error"); return; }
                 cur = email;
                 localStorage.setItem("sammCurrent", email);
                 closeAuth(); renderAll(); go("shop");
-                showToast("OK", "Dang nhap thanh cong!", "success");
+                showToast("✓", "Đăng nhập thành công!", "success");
             }
         });
-    };
-    window.doLogout = function(){
-        if(!confirm("Dang xuat?")) return;
+    }
+    function doLogout(){
+        if(!confirm("Đăng xuất?")) return;
         cur = ""; adminUnlocked = false;
         localStorage.removeItem("sammCurrent");
         renderAll(); go("shop");
-    };
+    }
 
-    window.openChangePass = function(){ $("passModal").classList.add("on"); $("oldPass").value = ""; $("newPass").value = ""; $("newPass2").value = ""; };
-    window.closeChangePass = function(){ $("passModal").classList.remove("on"); };
-    window.submitChangePass = function(){
-        var u = user(); if(!u) return;
-        var o = $("oldPass").value, n = $("newPass").value, n2 = $("newPass2").value;
-        if(o !== u.password){ alert("Mat khau hien tai sai"); return; }
-        if(n.length < 6){ alert("Mat khau moi >= 6"); return; }
-        if(n !== n2){ alert("Nhap lai khong khop"); return; }
+    function openChangePass(){ el("passModal").classList.add("on"); el("oldPass").value = ""; el("newPass").value = ""; el("newPass2").value = ""; }
+    function closeChangePass(){ el("passModal").classList.remove("on"); }
+    function submitChangePass(){
+        var u = currentUser(); if(!u) return;
+        var o = el("oldPass").value, n = el("newPass").value, n2 = el("newPass2").value;
+        if(o !== u.password){ alert("Mật khẩu hiện tại sai"); return; }
+        if(n.length < 6){ alert("Mật khẩu mới >= 6"); return; }
+        if(n !== n2){ alert("Nhập lại không khớp"); return; }
         loadAllData(function(){
             users[cur].password = n;
             saveUsersToFirebase();
             closeChangePass();
-            showToast("OK", "Doi mat khau thanh cong!", "success");
+            showToast("✓", "Đổi mật khẩu thành công!", "success");
         });
-    };
+    }
 
-    var amtInput = $("amt");
+    var amtInput = el("amt");
     if(amtInput){
         amtInput.oninput = function(e){ var v = e.target.value.replace(/\D/g, ""); e.target.value = v ? Number(v).toLocaleString("vi-VN") : ""; };
     }
@@ -543,54 +571,54 @@ window.addEventListener('load', function(){
             amtInput.value = Number(this.dataset.a).toLocaleString("vi-VN");
         };
     }
-    window.createDeposit = function(){
-        if(!user()){ openAuth(); return; }
-        if(deposit){ alert("Dang co phien nap!"); return; }
+    function createDeposit(){
+        if(!currentUser()){ openAuth(); return; }
+        if(deposit){ alert("Đang có phiên nạp!"); return; }
         var amt = Number(amtInput.value.replace(/\D/g, ""));
-        if(amt < 10000){ alert("Toi thieu 10.000 d"); return; }
-        if(amt > 50000000){ alert("Toi da 50.000.000 d"); return; }
+        if(amt < 10000){ alert("Tối thiểu 10.000 đ"); return; }
+        if(amt > 50000000){ alert("Tối đa 50.000.000 đ"); return; }
         loadAllData(function(){
             deposit = { amount: amt, expiresAt: Date.now() + 600000 };
             users[cur].deposits = users[cur].deposits || [];
             users[cur].deposits.unshift({ amount: amt, status: "Cho xac nhan", time: Date.now() });
             saveUsersToFirebase();
-            $("qrAmt").textContent = money(amt);
-            $("form").style.display = "none"; $("warn").style.display = "none"; $("qr").style.display = "block";
+            el("qrAmt").textContent = money(amt);
+            el("form").style.display = "none"; el("warn").style.display = "none"; el("qr").style.display = "block";
             startTimer();
-            showToast("OK", "Yeu cau nap da gui! Cho 1-3 phut.", "info");
+            showToast("⏳", "Yêu cầu nạp đã gửi! Chờ 1-3 phút.", "info");
         });
-    };
+    }
     function startTimer(){
-        clearInterval(timerId); $("timer").style.color = "#fff"; tick();
+        clearInterval(timerId); el("timer").style.color = "#0d9488"; tick();
         timerId = setInterval(tick, 1000);
     }
     function tick(){
         if(!deposit) return;
         var r = Math.max(0, deposit.expiresAt - Date.now());
         var m = Math.floor(r / 60000), s = Math.floor((r % 60000) / 1000);
-        $("timer").textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
-        if(r <= 0){ clearInterval(timerId); $("timer").style.color = "#ef4444"; cancelDeposit(false); }
+        el("timer").textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+        if(r <= 0){ clearInterval(timerId); el("timer").style.color = "#ef4444"; cancelDeposit(false); }
     }
-    window.cancelDeposit = function(ask){
-        if(ask && !confirm("Huy yeu cau nap?")) return;
+    function cancelDeposit(ask){
+        if(ask && !confirm("Hủy yêu cầu nạp?")) return;
         clearInterval(timerId); timerId = null; deposit = null;
-        $("qr").style.display = "none"; $("form").style.display = "block"; $("warn").style.display = "block";
-        $("timer").style.color = "#fff"; $("timer").textContent = "10:00";
-    };
+        el("qr").style.display = "none"; el("form").style.display = "block"; el("warn").style.display = "block";
+        el("timer").style.color = "#0d9488"; el("timer").textContent = "10:00";
+    }
 
-    window.buy = function(id){
-        if(!user()){ openAuth(); showToast("!", "Vui long dang nhap!", "info"); return; }
+    function buy(id){
+        if(!currentUser()){ openAuth(); showToast("!", "Vui lòng đăng nhập!", "info"); return; }
         loadAllData(function(){
             var p = null;
             for(var i=0;i<products.length;i++){ if(products[i].id === id){ p = products[i]; break; } }
-            if(!p){ alert("San pham khong ton tai!"); return; }
+            if(!p){ alert("Sản phẩm không tồn tại!"); return; }
             var price = Number(p.price || 0);
             if(Number(users[cur].balance || 0) < price){
-                showToast("!", "So du khong du! Can " + money(price), "info");
+                showToast("!", "Số dư không đủ! Cần " + money(price), "info");
                 setTimeout(function(){ go("nap"); }, 800);
                 return;
             }
-            if(!confirm("Mua \"" + p.name + "\" voi gia " + money(price) + "?")) return;
+            if(!confirm("Mua \"" + p.name + "\" với giá " + money(price) + "?")) return;
             var t = Date.now();
             var code = "DH" + String(t).slice(-8);
             users[cur].balance = Number(users[cur].balance || 0) - price;
@@ -599,35 +627,35 @@ window.addEventListener('load', function(){
             saveUsersToFirebase();
             renderAll();
             currentOrderUrl = p.url || "";
-            $("odName").textContent = p.name; $("odPrice").textContent = money(price);
-            $("odTime").textContent = new Date(t).toLocaleString("vi-VN"); $("odCode").textContent = code;
-            if(p.url) $("odLinkBtn").style.display = "block"; else $("odLinkBtn").style.display = "none";
-            $("orderModal").classList.add("on");
+            el("odName").textContent = p.name; el("odPrice").textContent = money(price);
+            el("odTime").textContent = new Date(t).toLocaleString("vi-VN"); el("odCode").textContent = code;
+            if(p.url) el("odLinkBtn").style.display = "block"; else el("odLinkBtn").style.display = "none";
+            el("orderModal").classList.add("on");
         });
-    };
-    window.closeOrderModal = function(){ $("orderModal").classList.remove("on"); };
-    window.openOrderLink = function(){ if(currentOrderUrl) window.open(currentOrderUrl, "_blank"); };
-    window.viewOrderInHistory = function(){ closeOrderModal(); go("don"); showToast("OK", "Da chuyen den Don hang!", "success"); };
+    }
+    function closeOrderModal(){ el("orderModal").classList.remove("on"); }
+    function openOrderLink(){ if(currentOrderUrl) window.open(currentOrderUrl, "_blank"); }
+    function viewOrderInHistory(){ closeOrderModal(); go("don"); showToast("✓", "Đã chuyển đến Đơn hàng!", "success"); }
 
-    function checkAdmin(){ if(!isAdmin()){ alert("Ban khong phai admin!"); return false; } if(!adminUnlocked){ alert("Chua xac thuc!"); return false; } return true; }
+    function checkAdmin(){ if(!isAdmin()){ alert("Bạn không phải admin!"); return false; } if(!adminUnlocked){ alert("Chưa xác thực!"); return false; } return true; }
 
-    window.addProduct = function(){
+    function addProduct(){
         if(!checkAdmin()) return;
-        var name = $("pName").value.trim(), desc = $("pDesc").value.trim();
-        var price = Number($("pPrice").value), image = $("pImage").value.trim(), url = $("pUrl").value.trim();
-        if(!name){ alert("Nhap ten san pham"); return; }
-        if(!price || price <= 0){ alert("Nhap gia hop le"); return; }
+        var name = el("pName").value.trim(), desc = el("pDesc").value.trim();
+        var price = Number(el("pPrice").value), image = el("pImage").value.trim(), url = el("pUrl").value.trim();
+        if(!name){ alert("Nhập tên sản phẩm"); return; }
+        if(!price || price <= 0){ alert("Nhập giá hợp lệ"); return; }
         loadAllData(function(){
             products.unshift({ id: Date.now(), name: name, desc: desc, price: price, image: image, url: url, createdAt: Date.now() });
             saveProductsToFirebase();
-            $("pName").value = ""; $("pDesc").value = ""; $("pPrice").value = ""; $("pImage").value = ""; $("pUrl").value = "";
-            showToast("OK", "Da day san pham!", "success");
+            el("pName").value = ""; el("pDesc").value = ""; el("pPrice").value = ""; el("pImage").value = ""; el("pUrl").value = "";
+            showToast("✓", "Đã đẩy sản phẩm!", "success");
             renderAll();
         });
-    };
-    window.delProduct = function(id){
+    }
+    function delProduct(id){
         if(!checkAdmin()) return;
-        if(!confirm("Xoa san pham?")) return;
+        if(!confirm("Xóa sản phẩm?")) return;
         loadAllData(function(){
             var arr = [];
             for(var i=0;i<products.length;i++){ if(products[i].id !== id) arr.push(products[i]); }
@@ -635,24 +663,24 @@ window.addEventListener('load', function(){
             saveProductsToFirebase();
             renderAll();
         });
-    };
-    window.setNotice = function(){
+    }
+    function setNotice(){
         if(!checkAdmin()) return;
-        var text = $("nText").value.trim();
-        if(!text){ alert("Nhap noi dung"); return; }
+        var text = el("nText").value.trim();
+        if(!text){ alert("Nhập nội dung"); return; }
         loadAllData(function(){
             notices = [{ text: text, time: Date.now() }];
             saveNoticesToFirebase();
-            $("nText").value = "";
-            showToast("OK", "Da gui thong bao!", "success");
+            el("nText").value = "";
+            showToast("✓", "Đã gửi thông báo!", "success");
             renderNotice();
         });
-    };
-    window.clearNotice = function(){
+    }
+    function clearNotice(){
         if(!checkAdmin()) return;
         notices = []; saveNoticesToFirebase(); renderNotice();
-    };
-    window.approveDeposit = function(email, index){
+    }
+    function approveDeposit(email, index){
         if(!checkAdmin()) return;
         loadAllData(function(){
             if(!users[email] || !users[email].deposits || !users[email].deposits[index]) return;
@@ -662,11 +690,11 @@ window.addEventListener('load', function(){
             users[email].deposits[index].status = "Da duyet";
             users[email].deposits[index].approvedAt = Date.now();
             saveUsersToFirebase();
-            showToast("OK", "Da duyet " + money(d.amount), "success");
+            showToast("✓", "Đã duyệt " + money(d.amount), "success");
             renderAll();
         });
-    };
-    window.rejectDeposit = function(email, index){
+    }
+    function rejectDeposit(email, index){
         if(!checkAdmin()) return;
         loadAllData(function(){
             if(!users[email] || !users[email].deposits || !users[email].deposits[index]) return;
@@ -674,29 +702,29 @@ window.addEventListener('load', function(){
             saveUsersToFirebase();
             renderAll();
         });
-    };
-    window.clearAllProducts = function(){
+    }
+    function clearAllProducts(){
         if(!checkAdmin()) return;
-        if(!confirm("Xoa TAT CA san pham?")) return;
+        if(!confirm("Xóa TẤT CẢ sản phẩm?")) return;
         products = []; saveProductsToFirebase(); renderAll();
-    };
-    window.clearAllUsers = function(){
+    }
+    function clearAllUsers(){
         if(!checkAdmin()) return;
-        if(!confirm("Xoa TAT CA users?")) return;
+        if(!confirm("Xóa TẤT CẢ users?")) return;
         users = {}; cur = ""; adminUnlocked = false;
         saveUsersToFirebase();
         localStorage.removeItem("sammCurrent");
         renderAll(); go("shop");
-    };
+    }
 
     function renderProducts(){
-        var box = $("products");
+        var box = el("products");
         if(!box) return;
-        if(!products.length){ box.innerHTML = '<div class="empty" style="grid-column:1/-1">Chua co san pham</div>'; return; }
+        if(!products.length){ box.innerHTML = '<div class="empty" style="grid-column:1/-1">Chưa có sản phẩm</div>'; return; }
         var html = "";
         for(var i=0;i<products.length;i++){
             var p = products[i];
-            var img = p.image ? esc(p.image) : "https://placehold.co/400x300/0f141b/5eead4?text=SAMM";
+            var img = p.image ? esc(p.image) : "https://placehold.co/400x300/f5f7fa/0d9488?text=SAMM";
             html += '<div class="product"><div class="img-wrap">';
             html += '<img src="' + img + '" onerror="this.src=\'https://placehold.co/400x300?text=SAMM\'">';
             html += '<div class="badge">HOT</div></div><div class="product-body">';
@@ -708,16 +736,16 @@ window.addEventListener('load', function(){
         box.innerHTML = html;
     }
     function renderNotice(){
-        var n = $("notice");
+        var n = el("notice");
         if(!n) return;
-        if(notices.length){ n.innerHTML = "TB: " + esc(notices[0].text); n.style.display = "block"; }
+        if(notices.length){ n.innerHTML = "📢 " + esc(notices[0].text); n.style.display = "block"; }
         else { n.style.display = "none"; }
     }
     function renderOrders(){
-        var u = user();
-        var ob = $("orders");
+        var u = currentUser();
+        var ob = el("orders");
         if(!ob) return;
-        if(!u || !u.orders || !u.orders.length){ ob.innerHTML = '<div class="empty">Chua co don hang</div>'; return; }
+        if(!u || !u.orders || !u.orders.length){ ob.innerHTML = '<div class="empty">Chưa có đơn hàng</div>'; return; }
         var html = "";
         for(var i=0;i<u.orders.length;i++){
             var o = u.orders[i];
@@ -729,45 +757,40 @@ window.addEventListener('load', function(){
         ob.innerHTML = html;
     }
     function renderProfile(){
-        var u = user();
+        var u = currentUser();
         if(!u){
-            $("cName").textContent = "Dang nhap"; $("cBal").textContent = "0 VND"; $("cAv").textContent = "?";
-            $("guestView").style.display = "block"; $("profileView").style.display = "none";
+            el("cName").textContent = "Đăng nhập"; el("cBal").textContent = "0 VND"; el("cAv").textContent = "?";
+            el("guestView").style.display = "block"; el("profileView").style.display = "none";
             return;
         }
-        $("cName").textContent = u.email.split("@")[0];
-        $("cBal").textContent = Number(u.balance || 0).toLocaleString("vi-VN") + " VND";
-        $("cAv").textContent = u.email[0].toUpperCase();
-        $("guestView").style.display = "none"; $("profileView").style.display = "block";
-        $("pAv").textContent = u.email[0].toUpperCase(); $("pEmail").textContent = u.email;
-        $("pBal").textContent = money(u.balance); $("pOrderCount").textContent = (u.orders || []).length;
-        if(u.createdAt){ $("pJoined").textContent = "Thanh vien tu " + new Date(u.createdAt).toLocaleDateString("vi-VN"); }
-        else { $("pJoined").textContent = ""; }
-    }
-    function renderAdminCorner(){
-        var c = $("adminCorner");
-        if(!c) return;
-        if(isAdmin()) c.classList.add("on"); else c.classList.remove("on");
+        el("cName").textContent = u.email.split("@")[0];
+        el("cBal").textContent = Number(u.balance || 0).toLocaleString("vi-VN") + " VND";
+        el("cAv").textContent = u.email[0].toUpperCase();
+        el("guestView").style.display = "none"; el("profileView").style.display = "block";
+        el("pAv").textContent = u.email[0].toUpperCase(); el("pEmail").textContent = u.email;
+        el("pBal").textContent = money(u.balance); el("pOrderCount").textContent = (u.orders || []).length;
+        if(u.createdAt){ el("pJoined").textContent = "Thành viên từ " + new Date(u.createdAt).toLocaleDateString("vi-VN"); }
+        else { el("pJoined").textContent = ""; }
     }
     function renderAdmin(){
         if(!isAdmin() || !adminUnlocked) return;
-        var pl = $("productList");
+        var pl = el("productList");
         if(pl){
-            if(!products.length){ pl.innerHTML = '<div class="empty">Chua co san pham</div>'; }
+            if(!products.length){ pl.innerHTML = '<div class="empty">Chưa có sản phẩm</div>'; }
             else {
                 var html = "";
                 for(var i=0;i<products.length;i++){
                     var p = products[i];
-                    var img = p.image ? esc(p.image) : "https://placehold.co/100x100/1f2937/5eead4?text=S";
+                    var img = p.image ? esc(p.image) : "https://placehold.co/100x100/f3f4f6/0d9488?text=S";
                     html += '<div class="admin-item"><img src="' + img + '" onerror="this.src=\'https://placehold.co/100x100?text=S\'">';
                     html += '<div class="info"><div class="n">' + esc(p.name) + '</div>';
                     html += '<div class="p">' + money(p.price) + '</div></div>';
-                    html += '<button class="del" onclick="delProduct(' + p.id + ')">x</button></div>';
+                    html += '<button class="del" onclick="delProduct(' + p.id + ')">✕</button></div>';
                 }
                 pl.innerHTML = html;
             }
         }
-        var dl = $("depositList");
+        var dl = el("depositList");
         if(dl){
             var pending = [];
             for(var email in users){
@@ -777,15 +800,15 @@ window.addEventListener('load', function(){
                     if(deps[k].status === "Cho xac nhan"){ pending.push({ email: email, index: k, amount: deps[k].amount }); }
                 }
             }
-            if(!pending.length){ dl.innerHTML = '<div class="empty">Khong co yeu cau nap</div>'; }
+            if(!pending.length){ dl.innerHTML = '<div class="empty">Không có yêu cầu nạp</div>'; }
             else {
                 var h = "";
                 for(var j=0;j<pending.length;j++){
                     var d = pending[j];
                     h += '<div class="dep-approve"><div><div class="amt">' + money(d.amount) + '</div>';
                     h += '<div class="email">' + esc(d.email) + '</div></div><div>';
-                    h += '<button class="btn-ok" onclick="approveDeposit(\'' + d.email + '\',' + d.index + ')">Duyet</button>';
-                    h += '<button class="btn-no" onclick="rejectDeposit(\'' + d.email + '\',' + d.index + ')">Huy</button>';
+                    h += '<button class="btn-ok" onclick="approveDeposit(\'' + d.email + '\',' + d.index + ')">✓ Duyệt</button>';
+                    h += '<button class="btn-no" onclick="rejectDeposit(\'' + d.email + '\',' + d.index + ')">✕ Hủy</button>';
                     h += '</div></div>';
                 }
                 dl.innerHTML = h;
@@ -797,27 +820,26 @@ window.addEventListener('load', function(){
         renderNotice();
         renderOrders();
         renderProfile();
-        renderAdminCorner();
         checkApprovedNotification();
     }
     function checkApprovedNotification(){
-        var u = user();
+        var u = currentUser();
         if(!u || !u.deposits) return;
         for(var i=0;i<u.deposits.length;i++){
             var d = u.deposits[i];
             if(d.status === "Da duyet" && d.approvedAt && !d.notified){
                 users[cur].deposits[i].notified = true;
                 saveUsersToFirebase();
-                showToast("OK", "Ban da thanh toan thanh cong! So du " + money(d.amount) + " da duoc cong.", "success");
+                showToast("✓", "Bạn đã thanh toán thành công! Số dư " + money(d.amount) + " đã được cộng.", "success");
                 return;
             }
         }
     }
-    window.toggleDepHistory = function(){
-        var el = $("depHistory"), arw = $("depArrow");
-        if(el.style.display === "none"){
-            var u = user(); var list = (u && u.deposits) ? u.deposits : [];
-            if(!list.length){ el.innerHTML = '<div class="empty" style="padding:16px">Chua co lich su</div>'; }
+    function toggleDepHistory(){
+        var elh = el("depHistory"), arw = el("depArrow");
+        if(elh.style.display === "none"){
+            var u = currentUser(); var list = (u && u.deposits) ? u.deposits : [];
+            if(!list.length){ elh.innerHTML = '<div class="empty" style="padding:16px">Chưa có lịch sử</div>'; }
             else {
                 var html = "";
                 for(var i=0;i<list.length;i++){
@@ -825,13 +847,42 @@ window.addEventListener('load', function(){
                     var cls = "wait";
                     if(d.status === "Da duyet") cls = "done";
                     else if(d.status === "Da huy") cls = "cancel";
-                    html += '<div class="dep-item"><div><b style="color:#fff">' + money(d.amount) + '</b><br><span style="color:#6b7280;font-size:10px">' + new Date(d.time).toLocaleString("vi-VN") + '</span></div><span class="st ' + cls + '">' + esc(d.status) + '</span></div>';
+                    html += '<div class="dep-item"><div><b style="color:#111827">' + money(d.amount) + '</b><br><span style="color:#9ca3af;font-size:10px">' + new Date(d.time).toLocaleString("vi-VN") + '</span></div><span class="st ' + cls + '">' + esc(d.status) + '</span></div>';
                 }
-                el.innerHTML = html;
+                elh.innerHTML = html;
             }
-            el.style.display = "block"; arw.textContent = "▲";
-        } else { el.style.display = "none"; arw.textContent = "▼"; }
-    };
+            elh.style.display = "block"; arw.textContent = "▲";
+        } else { elh.style.display = "none"; arw.textContent = "▼"; }
+    }
+
+    window.go = go;
+    window.openAdminPanel = openAdminPanel;
+    window.closeAdminPass = closeAdminPass;
+    window.verifyAdminPass = verifyAdminPass;
+    window.chipClick = chipClick;
+    window.openAuth = openAuth;
+    window.closeAuth = closeAuth;
+    window.switchAuth = switchAuth;
+    window.submitAuth = submitAuth;
+    window.doLogout = doLogout;
+    window.openChangePass = openChangePass;
+    window.closeChangePass = closeChangePass;
+    window.submitChangePass = submitChangePass;
+    window.createDeposit = createDeposit;
+    window.cancelDeposit = cancelDeposit;
+    window.buy = buy;
+    window.closeOrderModal = closeOrderModal;
+    window.openOrderLink = openOrderLink;
+    window.viewOrderInHistory = viewOrderInHistory;
+    window.addProduct = addProduct;
+    window.delProduct = delProduct;
+    window.setNotice = setNotice;
+    window.clearNotice = clearNotice;
+    window.approveDeposit = approveDeposit;
+    window.rejectDeposit = rejectDeposit;
+    window.clearAllProducts = clearAllProducts;
+    window.clearAllUsers = clearAllUsers;
+    window.toggleDepHistory = toggleDepHistory;
 
     cur = localStorage.getItem("sammCurrent") || "";
 
@@ -841,7 +892,37 @@ window.addEventListener('load', function(){
         products = data.products || [];
         notices = data.notices || [];
         renderAll();
-        if($("p-admin") && $("p-admin").classList.contains("on") && adminUnlocked) renderAdmin();
+        if(el("p-admin") && el("p-admin").classList.contains("on") && adminUnlocked) renderAdmin();
+    });
+
+    var lastPendingCount = -1;
+    db.ref('shopData/users').on('value', function(snapshot){
+        if(!isAdmin() || !adminUnlocked) return;
+        var allUsers = snapshot.val() || {};
+        var pendingList = [];
+        for(var email in allUsers){
+            if(!allUsers.hasOwnProperty(email)) continue;
+            var deps = allUsers[email].deposits || [];
+            for(var i=0;i<deps.length;i++){
+                if(deps[i].status === "Cho xac nhan"){
+                    pendingList.push({ email: email, amount: deps[i].amount });
+                }
+            }
+        }
+        if(lastPendingCount === -1){
+            lastPendingCount = pendingList.length;
+            return;
+        }
+        if(pendingList.length > lastPendingCount){
+            var newDep = pendingList[pendingList.length - 1];
+            showToast("🔔", "Có yêu cầu nạp " + money(newDep.amount) + " từ " + newDep.email, "notify");
+            try {
+                var audio = new Audio("https://files.catbox.moe/8pv4gm.mp3");
+                audio.volume = 1;
+                audio.play();
+            } catch(e){}
+        }
+        lastPendingCount = pendingList.length;
     });
 
     loadAllData(function(){
